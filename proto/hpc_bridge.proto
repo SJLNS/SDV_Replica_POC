@@ -1,0 +1,21 @@
+syntax = "proto3";
+package sdvreplica.hpcbridge.v1;
+
+// Streams filtered VSS signal updates between HPC-1 and HPC-2 over the
+// Ethernet backbone (mTLS 1.3). Each side only forwards the VSS subtree
+// paths it's configured to expose — that scoping is the HPC-level filter
+// described in the architecture doc.
+service HpcBridge {
+  rpc StreamSignals(stream SignalUpdate) returns (stream SignalUpdate);
+}
+
+message SignalUpdate {
+  string vss_path = 1;
+  oneof value {
+    double numeric_value = 2;
+    bool bool_value = 3;
+    string string_value = 4;
+  }
+  int64 timestamp_ms = 5;
+  string origin_hpc = 6; // "hpc-1" or "hpc-2" — for loop-prevention/debugging
+}

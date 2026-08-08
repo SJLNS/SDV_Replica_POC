@@ -1,0 +1,37 @@
+# build artifacts
+build/
+build-*/
+*.o
+*.elf
+*.bin
+*.hex
+*.map
+
+# Yocto
+hpc2-bbb/yocto/build*/
+hpc2-bbb/yocto/downloads/
+hpc2-bbb/yocto/sstate-cache/
+poky/
+
+# Xen / QNX
+hpc1-rpi5/xen/build*/
+*.qnxbin
+
+# Python
+__pycache__/
+*.pyc
+.venv/
+
+# secrets - never commit real key material
+pki/root-ca/*
+pki/intermediate-ca/**/*.key
+pki/intermediate-ca/**/*.crt
+pki/intermediate-ca/**/*.srl
+pki/certs/**
+!pki/scripts/**
+!pki/**/.gitkeep
+
+# editors / OS
+.vscode/
+.idea/
+.DS_Store

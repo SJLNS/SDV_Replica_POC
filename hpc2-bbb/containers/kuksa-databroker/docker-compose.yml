@@ -1,0 +1,17 @@
+services:
+  databroker:
+    image: ghcr.io/eclipse-kuksa/kuksa-databroker:main
+    container_name: kuksa-databroker-hpc2
+    restart: unless-stopped
+    ports:
+      - "55555:55555"
+    volumes:
+      - ../../../vss:/vss:ro
+      - ../../../pki/certs/hpc2:/certs:ro
+    command: >
+      --vss /vss/vss.json
+      --tls-cert /certs/hpc2.crt
+      --tls-private-key /certs/hpc2.key
+    # NOTE: confirm whether this image version verifies client certs for true mTLS,
+    # or only does server-side TLS + JWT (see architecture doc, PKI section). If it's
+    # the latter, front this with an envoy/nginx sidecar doing client-cert verification.

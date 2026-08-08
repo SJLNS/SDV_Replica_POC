@@ -1,0 +1,38 @@
+name: build-and-lint
+on: [push, pull_request]
+
+jobs:
+  zcu-firmware:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install ARM toolchain
+        run: sudo apt-get update && sudo apt-get install -y gcc-arm-none-eabi binutils-arm-none-eabi cmake
+      - name: Build ZCU-1 firmware
+        run: cmake -S zcu/zcu1-discovery -B build-zcu1 && cmake --build build-zcu1
+      - name: Build ZCU-2 firmware
+        run: cmake -S zcu/zcu2-nucleo -B build-zcu2 && cmake --build build-zcu2
+
+  compose-and-proto-lint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Validate docker-compose files
+        run: |
+          for f in hpc1-rpi5/dom0-services/*/docker-compose.yml hpc2-bbb/containers/*/docker-compose.yml; do
+            [ -f "$f" ] && docker compose -f "$f" config >/dev/null && echo "OK: $f"
+          done
+      - name: Lint .proto contracts
+        run: |
+          sudo apt-get install -y protobuf-compiler
+          mkdir -p /tmp/proto-out
+          protoc --proto_path=proto --python_out=/tmp/proto-out proto/*.proto
+
+  python-syntax:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Byte-compile Python services
+        run: |
+          python3 -m py_compile hpc1-rpi5/dom0-services/mqtt-feeder/feeder.py
+          python3 -m py_compile hpc2-bbb/containers/mqtt-feeder/feeder.py

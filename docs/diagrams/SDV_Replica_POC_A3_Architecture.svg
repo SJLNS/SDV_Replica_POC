@@ -1,0 +1,189 @@
+<svg width="1600" height="1130" viewBox="0 0 1600 1130" xmlns="http://www.w3.org/2000/svg">
+<defs><marker id="arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M1 1L9 5L1 9" fill="none" stroke="#4a4a45" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></marker><marker id="arrowb" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M1 1L9 5L1 9" fill="none" stroke="#8a8a84" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></marker></defs>
+<rect x="0" y="0" width="1600" height="1130" rx="0" fill="#ffffff" stroke="none" stroke-width="0"/>
+<text x="30" y="34" font-family="Arial, Helvetica, sans-serif" font-size="22" font-weight="700" fill="#141412" text-anchor="start">SDV_Replica_POC — System Architecture (HW + SW modules, interfaces, data flow)</text>
+<text x="30" y="54" font-family="Arial, Helvetica, sans-serif" font-size="12.5" font-weight="400" fill="#6a6a63" text-anchor="start">Physical topology · protocol stack · security boundary — A3 landscape reference sheet</text>
+<line x1="30" y1="88" x2="1570" y2="88" stroke="#c9c8c0" stroke-width="1"/>
+<rect x="790.7" y="68" width="14" height="14" rx="3" fill="#F2F2F0" stroke="#888880" stroke-width="1"/>
+<text x="810.7" y="79.5" font-family="Arial, Helvetica, sans-serif" font-size="10" font-weight="400" fill="#4a4a45" text-anchor="start">Physical I/O</text>
+<rect x="907.9000000000001" y="68" width="14" height="14" rx="3" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
+<text x="927.9000000000001" y="79.5" font-family="Arial, Helvetica, sans-serif" font-size="10" font-weight="400" fill="#4a4a45" text-anchor="start">Zonal MCU</text>
+<rect x="1006.8000000000001" y="68" width="14" height="14" rx="3" fill="#EEEDFE" stroke="#534AB7" stroke-width="1"/>
+<text x="1026.8000000000002" y="79.5" font-family="Arial, Helvetica, sans-serif" font-size="10" font-weight="400" fill="#4a4a45" text-anchor="start">Hypervisor/guest OS</text>
+<rect x="1166.7" y="68" width="14" height="14" rx="3" fill="#FAEEDA" stroke="#854F0B" stroke-width="1"/>
+<text x="1186.7" y="79.5" font-family="Arial, Helvetica, sans-serif" font-size="10" font-weight="400" fill="#4a4a45" text-anchor="start">Containers</text>
+<rect x="1271.7" y="68" width="14" height="14" rx="3" fill="#E6F1FB" stroke="#185FA5" stroke-width="1"/>
+<text x="1291.7" y="79.5" font-family="Arial, Helvetica, sans-serif" font-size="10" font-weight="400" fill="#4a4a45" text-anchor="start">Cloud service</text>
+<rect x="30" y="255" width="190" height="110" rx="8" fill="#F2F2F0" stroke="#888880" stroke-width="1.5"/>
+<text x="42" y="281" font-family="Arial, Helvetica, sans-serif" font-size="13.5" font-weight="700" fill="#26251f" text-anchor="start">Sensors / Actuators A</text>
+<text x="42" y="301" font-family="Arial, Helvetica, sans-serif" font-size="11" font-weight="400" fill="#3a3a36" text-anchor="start">Motors, Relays,</text>
+<text x="42" y="316" font-family="Arial, Helvetica, sans-serif" font-size="11" font-weight="400" fill="#3a3a36" text-anchor="start">Contactors</text>
+<text x="42" y="331" font-family="Arial, Helvetica, sans-serif" font-size="11" font-weight="400" fill="#3a3a36" text-anchor="start">(temp/pos/current I/O)</text>
+<rect x="250" y="230" width="190" height="160" rx="8" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1.5"/>
+<text x="262" y="254" font-family="Arial, Helvetica, sans-serif" font-size="13" font-weight="700" fill="#0b3d31" text-anchor="start">ZCU-1 — STM32 Discovery</text>
+<rect x="260" y="264" width="170" height="34" rx="6" fill="#ffffff" stroke="#8a8a84" stroke-width="1"/>
+<text x="270" y="278.28" font-family="Arial, Helvetica, sans-serif" font-size="12.5" font-weight="600" fill="#26251f" text-anchor="start">App logic (C)</text>
+<text x="270" y="289.5" font-family="Arial, Helvetica, sans-serif" font-size="10.5" font-weight="400" fill="#6a6a63" text-anchor="start">GPIO/ADC/PWM HAL</text>
+<rect x="260" y="302" width="170" height="34" rx="6" fill="#ffffff" stroke="#8a8a84" stroke-width="1"/>
+<text x="270" y="316.28" font-family="Arial, Helvetica, sans-serif" font-size="12.5" font-weight="600" fill="#26251f" text-anchor="start">MQTT client</text>
+<text x="270" y="327.5" font-family="Arial, Helvetica, sans-serif" font-size="10.5" font-weight="400" fill="#6a6a63" text-anchor="start">topic allow-list</text>
+<rect x="260" y="340" width="170" height="34" rx="6" fill="#ffffff" stroke="#8a8a84" stroke-width="1"/>
+<text x="270" y="354.28" font-family="Arial, Helvetica, sans-serif" font-size="12.5" font-weight="600" fill="#26251f" text-anchor="start">mbedTLS</text>
+<text x="270" y="365.5" font-family="Arial, Helvetica, sans-serif" font-size="10.5" font-weight="400" fill="#6a6a63" text-anchor="start">TLS 1.3 mutual auth</text>
+<line x1="220" y1="310" x2="250" y2="320" stroke="#4a4a45" stroke-width="2" marker-end="url(#arrow)"/>
+<text x="227.0" y="300" font-family="Arial, Helvetica, sans-serif" font-size="10" font-weight="400" fill="#5a5a54" text-anchor="start">GPIO/ADC/PWM</text>
+<rect x="470" y="105" width="520" height="420" rx="8" fill="#ffffff" stroke="#2c2c2a" stroke-width="1.8"/>
+<text x="484" y="131" font-family="Arial, Helvetica, sans-serif" font-size="15" font-weight="700" fill="#141412" text-anchor="start">HPC-1 — Raspberry Pi 5 (16GB)</text>
+<text x="484" y="149" font-family="Arial, Helvetica, sans-serif" font-size="11" font-weight="400" fill="#6a6a63" text-anchor="start">role: edge gateway + compute, AWS branch</text>
+<rect x="485" y="160" width="490" height="350" rx="10" fill="#F7F6FE" stroke="#7f77dd" stroke-width="1.4" stroke-dasharray="4,3"/>
+<text x="497" y="180" font-family="Arial, Helvetica, sans-serif" font-size="12.5" font-weight="700" fill="#3c3489" text-anchor="start">Xen hypervisor (type-1)</text>
+<rect x="497" y="190" width="227.0" height="305" rx="8" fill="#EEEDFE" stroke="#534AB7" stroke-width="1.5"/>
+<text x="507" y="208" font-family="Arial, Helvetica, sans-serif" font-size="11.5" font-weight="700" fill="#26215c" text-anchor="start">Dom0 — Linux (1 core)</text>
+<rect x="505" y="216" width="211.0" height="34" rx="6" fill="#ffffff" stroke="#8a8a84" stroke-width="1"/>
+<text x="515" y="230.28" font-family="Arial, Helvetica, sans-serif" font-size="12.5" font-weight="600" fill="#26251f" text-anchor="start">KUKSA Databroker</text>
+<text x="515" y="241.5" font-family="Arial, Helvetica, sans-serif" font-size="10.5" font-weight="400" fill="#6a6a63" text-anchor="start">gRPC · VSS tree A</text>
+<rect x="505" y="255" width="211.0" height="34" rx="6" fill="#ffffff" stroke="#8a8a84" stroke-width="1"/>
+<text x="515" y="269.28" font-family="Arial, Helvetica, sans-serif" font-size="12.5" font-weight="600" fill="#26251f" text-anchor="start">MQTT feeder</text>
+<text x="515" y="280.5" font-family="Arial, Helvetica, sans-serif" font-size="10.5" font-weight="400" fill="#6a6a63" text-anchor="start">ZCU-1 -> VSS bridge</text>
+<rect x="505" y="294" width="211.0" height="34" rx="6" fill="#ffffff" stroke="#8a8a84" stroke-width="1"/>
+<text x="515" y="308.28" font-family="Arial, Helvetica, sans-serif" font-size="12.5" font-weight="600" fill="#26251f" text-anchor="start">HPC-bridge svc</text>
+<text x="515" y="319.5" font-family="Arial, Helvetica, sans-serif" font-size="10.5" font-weight="400" fill="#6a6a63" text-anchor="start">gRPC to HPC-2</text>
+<rect x="505" y="333" width="211.0" height="34" rx="6" fill="#ffffff" stroke="#8a8a84" stroke-width="1"/>
+<text x="515" y="347.28" font-family="Arial, Helvetica, sans-serif" font-size="12.5" font-weight="600" fill="#26251f" text-anchor="start">Cloud-gateway</text>
+<text x="515" y="358.5" font-family="Arial, Helvetica, sans-serif" font-size="10.5" font-weight="400" fill="#6a6a63" text-anchor="start">gRPC/HTTPS to AWS</text>
+<rect x="505" y="372" width="211.0" height="34" rx="6" fill="#ffffff" stroke="#8a8a84" stroke-width="1"/>
+<text x="515" y="386.28" font-family="Arial, Helvetica, sans-serif" font-size="12.5" font-weight="600" fill="#26251f" text-anchor="start">Mosquitto broker</text>
+<text x="515" y="397.5" font-family="Arial, Helvetica, sans-serif" font-size="10.5" font-weight="400" fill="#6a6a63" text-anchor="start">MQTT+mTLS, on-HPC</text>
+<rect x="505" y="411" width="211.0" height="34" rx="6" fill="#ffffff" stroke="#8a8a84" stroke-width="1"/>
+<text x="515" y="425.28" font-family="Arial, Helvetica, sans-serif" font-size="12.5" font-weight="600" fill="#26251f" text-anchor="start">Digital-key validator</text>
+<text x="515" y="436.5" font-family="Arial, Helvetica, sans-serif" font-size="10.5" font-weight="400" fill="#6a6a63" text-anchor="start">token check on cmd path</text>
+<rect x="736.0" y="190" width="227.0" height="305" rx="8" fill="#EEEDFE" stroke="#534AB7" stroke-width="1.5"/>
+<text x="746.0" y="208" font-family="Arial, Helvetica, sans-serif" font-size="11.5" font-weight="700" fill="#26215c" text-anchor="start">DomU — QNX (eval, 3 cores)</text>
+<rect x="744.0" y="220" width="211.0" height="44" rx="6" fill="#ffffff" stroke="#8a8a84" stroke-width="1"/>
+<text x="754.0" y="238.48" font-family="Arial, Helvetica, sans-serif" font-size="12.5" font-weight="600" fill="#26251f" text-anchor="start">Predictive analytics</text>
+<text x="754.0" y="253.0" font-family="Arial, Helvetica, sans-serif" font-size="10.5" font-weight="400" fill="#6a6a63" text-anchor="start">consumes VSS, writes predictions</text>
+<text x="744.0" y="285" font-family="Arial, Helvetica, sans-serif" font-size="10" font-weight="400" fill="#7a7a73" text-anchor="start">(reserved compute —</text>
+<text x="744.0" y="300" font-family="Arial, Helvetica, sans-serif" font-size="10" font-weight="400" fill="#7a7a73" text-anchor="start">future model workloads)</text>
+<line x1="724.0" y1="230" x2="736.0" y2="230" stroke="#8a8a84" stroke-width="1.4" marker-end="url(#arrowb)"/>
+<text x="730.0" y="246" font-family="Arial, Helvetica, sans-serif" font-size="8.5" font-weight="400" fill="#8a8a84" text-anchor="middle">virtio-net</text>
+<line x1="440" y1="310" x2="470" y2="255" stroke="#4a4a45" stroke-width="2" marker-end="url(#arrow)"/>
+<text x="450" y="300" font-family="Arial, Helvetica, sans-serif" font-size="10.5" font-weight="400" fill="#5a5a54" text-anchor="start">MQTT / TLS1.3</text>
+<text x="450" y="314" font-family="Arial, Helvetica, sans-serif" font-size="10.5" font-weight="400" fill="#5a5a54" text-anchor="start">mutual auth</text>
+<rect x="1090" y="110" width="300" height="360" rx="8" fill="#E6F1FB" stroke="#185FA5" stroke-width="1.6"/>
+<text x="1104" y="136" font-family="Arial, Helvetica, sans-serif" font-size="14.5" font-weight="700" fill="#0c447c" text-anchor="start">AWS (Branch A cloud)</text>
+<rect x="1102" y="150" width="276" height="40" rx="6" fill="#ffffff" stroke="#8fb8e0" stroke-width="1"/>
+<text x="1112" y="166.8" font-family="Arial, Helvetica, sans-serif" font-size="12.5" font-weight="600" fill="#26251f" text-anchor="start">IoT Core</text>
+<text x="1112" y="180.0" font-family="Arial, Helvetica, sans-serif" font-size="10.5" font-weight="400" fill="#6a6a63" text-anchor="start">X.509 device cert, mTLS</text>
+<rect x="1102" y="197" width="276" height="40" rx="6" fill="#ffffff" stroke="#8fb8e0" stroke-width="1"/>
+<text x="1112" y="213.8" font-family="Arial, Helvetica, sans-serif" font-size="12.5" font-weight="600" fill="#26251f" text-anchor="start">Telemetry ingest</text>
+<text x="1112" y="227.0" font-family="Arial, Helvetica, sans-serif" font-size="10.5" font-weight="400" fill="#6a6a63" text-anchor="start">gRPC/HTTPS+JSON</text>
+<rect x="1102" y="244" width="276" height="40" rx="6" fill="#ffffff" stroke="#8fb8e0" stroke-width="1"/>
+<text x="1112" y="260.8" font-family="Arial, Helvetica, sans-serif" font-size="12.5" font-weight="600" fill="#26251f" text-anchor="start">Digital Twin backend</text>
+<text x="1112" y="274.0" font-family="Arial, Helvetica, sans-serif" font-size="10.5" font-weight="400" fill="#6a6a63" text-anchor="start">mirrored VSS state</text>
+<rect x="1102" y="291" width="276" height="40" rx="6" fill="#ffffff" stroke="#8fb8e0" stroke-width="1"/>
+<text x="1112" y="307.8" font-family="Arial, Helvetica, sans-serif" font-size="12.5" font-weight="600" fill="#26251f" text-anchor="start">Command API</text>
+<text x="1112" y="321.0" font-family="Arial, Helvetica, sans-serif" font-size="10.5" font-weight="400" fill="#6a6a63" text-anchor="start">actuation requests down</text>
+<rect x="1102" y="338" width="276" height="40" rx="6" fill="#ffffff" stroke="#8fb8e0" stroke-width="1"/>
+<text x="1112" y="354.8" font-family="Arial, Helvetica, sans-serif" font-size="12.5" font-weight="600" fill="#26251f" text-anchor="start">OTA management (SOTA)</text>
+<text x="1112" y="368.0" font-family="Arial, Helvetica, sans-serif" font-size="10.5" font-weight="400" fill="#6a6a63" text-anchor="start">HPC image/tag rollout</text>
+<rect x="1102" y="385" width="276" height="40" rx="6" fill="#ffffff" stroke="#8fb8e0" stroke-width="1"/>
+<text x="1112" y="401.8" font-family="Arial, Helvetica, sans-serif" font-size="12.5" font-weight="600" fill="#26251f" text-anchor="start">Voice UI backend</text>
+<text x="1112" y="415.0" font-family="Arial, Helvetica, sans-serif" font-size="10.5" font-weight="400" fill="#6a6a63" text-anchor="start">intent -> Command API</text>
+<line x1="990" y1="255" x2="1090" y2="260" stroke="#4a4a45" stroke-width="2" marker-end="url(#arrow)"/>
+<text x="1040.0" y="239" font-family="Arial, Helvetica, sans-serif" font-size="9.5" font-weight="400" fill="#5a5a54" text-anchor="middle">gRPC/HTTPS</text>
+<text x="1040.0" y="277" font-family="Arial, Helvetica, sans-serif" font-size="9.5" font-weight="400" fill="#5a5a54" text-anchor="middle">mTLS1.3</text>
+<rect x="1410" y="60" width="160" height="54" rx="8" fill="#FBEAF0" stroke="#D4537E" stroke-width="1.5"/>
+<text x="1420" y="82" font-family="Arial, Helvetica, sans-serif" font-size="12" font-weight="700" fill="#72243e" text-anchor="start">Voice UI client</text>
+<text x="1420" y="98" font-family="Arial, Helvetica, sans-serif" font-size="10" font-weight="400" fill="#6a6a63" text-anchor="start">phone/laptop, wake-word</text>
+<polyline points="1490.0,114 1490.0,403 1386,403" fill="none" stroke="#4a4a45" stroke-width="2" marker-end="url(#arrow)"/>
+<rect x="30" y="790" width="190" height="110" rx="8" fill="#F2F2F0" stroke="#888880" stroke-width="1.5"/>
+<text x="42" y="816" font-family="Arial, Helvetica, sans-serif" font-size="13.5" font-weight="700" fill="#26251f" text-anchor="start">Sensors / Actuators B</text>
+<text x="42" y="836" font-family="Arial, Helvetica, sans-serif" font-size="11" font-weight="400" fill="#3a3a36" text-anchor="start">Motors, Relays,</text>
+<text x="42" y="851" font-family="Arial, Helvetica, sans-serif" font-size="11" font-weight="400" fill="#3a3a36" text-anchor="start">Contactors</text>
+<text x="42" y="866" font-family="Arial, Helvetica, sans-serif" font-size="11" font-weight="400" fill="#3a3a36" text-anchor="start">(temp/pos/current I/O)</text>
+<rect x="250" y="765" width="190" height="160" rx="8" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1.5"/>
+<text x="262" y="789" font-family="Arial, Helvetica, sans-serif" font-size="13" font-weight="700" fill="#0b3d31" text-anchor="start">ZCU-2 — STM32 Nucleo</text>
+<rect x="260" y="799" width="170" height="34" rx="6" fill="#ffffff" stroke="#8a8a84" stroke-width="1"/>
+<text x="270" y="813.28" font-family="Arial, Helvetica, sans-serif" font-size="12.5" font-weight="600" fill="#26251f" text-anchor="start">App logic (C)</text>
+<text x="270" y="824.5" font-family="Arial, Helvetica, sans-serif" font-size="10.5" font-weight="400" fill="#6a6a63" text-anchor="start">GPIO/ADC/PWM HAL</text>
+<rect x="260" y="837" width="170" height="34" rx="6" fill="#ffffff" stroke="#8a8a84" stroke-width="1"/>
+<text x="270" y="851.28" font-family="Arial, Helvetica, sans-serif" font-size="12.5" font-weight="600" fill="#26251f" text-anchor="start">MQTT client</text>
+<text x="270" y="862.5" font-family="Arial, Helvetica, sans-serif" font-size="10.5" font-weight="400" fill="#6a6a63" text-anchor="start">topic allow-list</text>
+<rect x="260" y="875" width="170" height="34" rx="6" fill="#ffffff" stroke="#8a8a84" stroke-width="1"/>
+<text x="270" y="889.28" font-family="Arial, Helvetica, sans-serif" font-size="12.5" font-weight="600" fill="#26251f" text-anchor="start">mbedTLS</text>
+<text x="270" y="900.5" font-family="Arial, Helvetica, sans-serif" font-size="10.5" font-weight="400" fill="#6a6a63" text-anchor="start">TLS 1.3 mutual auth</text>
+<line x1="220" y1="845" x2="250" y2="855" stroke="#4a4a45" stroke-width="2" marker-end="url(#arrow)"/>
+<text x="227.0" y="835" font-family="Arial, Helvetica, sans-serif" font-size="10" font-weight="400" fill="#5a5a54" text-anchor="start">GPIO/ADC/PWM</text>
+<rect x="470" y="610" width="520" height="420" rx="8" fill="#ffffff" stroke="#2c2c2a" stroke-width="1.8"/>
+<text x="484" y="636" font-family="Arial, Helvetica, sans-serif" font-size="15" font-weight="700" fill="#141412" text-anchor="start">HPC-2 — BeagleBone Black (AM3358)</text>
+<text x="484" y="654" font-family="Arial, Helvetica, sans-serif" font-size="11" font-weight="400" fill="#6a6a63" text-anchor="start">role: edge gateway, Azure branch — single core, no hypervisor</text>
+<rect x="485" y="665" width="490" height="350" rx="10" fill="#FFF8ED" stroke="#efaa5b" stroke-width="1.4" stroke-dasharray="4,3"/>
+<text x="497" y="685" font-family="Arial, Helvetica, sans-serif" font-size="12" font-weight="700" fill="#633806" text-anchor="start">Yocto Linux — Docker container runtime (cgroups/namespaces isolation)</text>
+<rect x="497.0" y="697" width="227.0" height="38" rx="6" fill="#FAEEDA" stroke="#c98a2e" stroke-width="1"/>
+<text x="507.0" y="712.96" font-family="Arial, Helvetica, sans-serif" font-size="12.5" font-weight="600" fill="#26251f" text-anchor="start">KUKSA Databroker</text>
+<text x="507.0" y="725.5" font-family="Arial, Helvetica, sans-serif" font-size="10.5" font-weight="400" fill="#6a6a63" text-anchor="start">gRPC · VSS tree B</text>
+<rect x="736.0" y="697" width="227.0" height="38" rx="6" fill="#FAEEDA" stroke="#c98a2e" stroke-width="1"/>
+<text x="746.0" y="712.96" font-family="Arial, Helvetica, sans-serif" font-size="12.5" font-weight="600" fill="#26251f" text-anchor="start">MQTT feeder</text>
+<text x="746.0" y="725.5" font-family="Arial, Helvetica, sans-serif" font-size="10.5" font-weight="400" fill="#6a6a63" text-anchor="start">ZCU-2 -> VSS bridge</text>
+<rect x="497.0" y="743" width="227.0" height="38" rx="6" fill="#FAEEDA" stroke="#c98a2e" stroke-width="1"/>
+<text x="507.0" y="758.96" font-family="Arial, Helvetica, sans-serif" font-size="12.5" font-weight="600" fill="#26251f" text-anchor="start">HPC-bridge svc</text>
+<text x="507.0" y="771.5" font-family="Arial, Helvetica, sans-serif" font-size="10.5" font-weight="400" fill="#6a6a63" text-anchor="start">gRPC to HPC-1</text>
+<rect x="736.0" y="743" width="227.0" height="38" rx="6" fill="#FAEEDA" stroke="#c98a2e" stroke-width="1"/>
+<text x="746.0" y="758.96" font-family="Arial, Helvetica, sans-serif" font-size="12.5" font-weight="600" fill="#26251f" text-anchor="start">Cloud-gateway</text>
+<text x="746.0" y="771.5" font-family="Arial, Helvetica, sans-serif" font-size="10.5" font-weight="400" fill="#6a6a63" text-anchor="start">gRPC/HTTPS to Azure</text>
+<rect x="497.0" y="789" width="227.0" height="38" rx="6" fill="#FAEEDA" stroke="#c98a2e" stroke-width="1"/>
+<text x="507.0" y="804.96" font-family="Arial, Helvetica, sans-serif" font-size="12.5" font-weight="600" fill="#26251f" text-anchor="start">Mosquitto broker</text>
+<text x="507.0" y="817.5" font-family="Arial, Helvetica, sans-serif" font-size="10.5" font-weight="400" fill="#6a6a63" text-anchor="start">MQTT+mTLS, on-HPC</text>
+<rect x="736.0" y="789" width="227.0" height="38" rx="6" fill="#FAEEDA" stroke="#c98a2e" stroke-width="1"/>
+<text x="746.0" y="804.96" font-family="Arial, Helvetica, sans-serif" font-size="12.5" font-weight="600" fill="#26251f" text-anchor="start">Digital-key validator</text>
+<text x="746.0" y="817.5" font-family="Arial, Helvetica, sans-serif" font-size="10.5" font-weight="400" fill="#6a6a63" text-anchor="start">token check on cmd path</text>
+<line x1="440" y1="845" x2="470" y2="760" stroke="#4a4a45" stroke-width="2" marker-end="url(#arrow)"/>
+<text x="450" y="835" font-family="Arial, Helvetica, sans-serif" font-size="10.5" font-weight="400" fill="#5a5a54" text-anchor="start">MQTT / TLS1.3</text>
+<text x="450" y="849" font-family="Arial, Helvetica, sans-serif" font-size="10.5" font-weight="400" fill="#5a5a54" text-anchor="start">mutual auth</text>
+<rect x="1090" y="640" width="300" height="360" rx="8" fill="#E6F1FB" stroke="#185FA5" stroke-width="1.6"/>
+<text x="1104" y="666" font-family="Arial, Helvetica, sans-serif" font-size="14.5" font-weight="700" fill="#0c447c" text-anchor="start">Azure (Branch B cloud)</text>
+<rect x="1102" y="680" width="276" height="40" rx="6" fill="#ffffff" stroke="#8fb8e0" stroke-width="1"/>
+<text x="1112" y="696.8" font-family="Arial, Helvetica, sans-serif" font-size="12.5" font-weight="600" fill="#26251f" text-anchor="start">IoT Hub</text>
+<text x="1112" y="710.0" font-family="Arial, Helvetica, sans-serif" font-size="10.5" font-weight="400" fill="#6a6a63" text-anchor="start">X.509 device cert, mTLS</text>
+<rect x="1102" y="727" width="276" height="40" rx="6" fill="#ffffff" stroke="#8fb8e0" stroke-width="1"/>
+<text x="1112" y="743.8" font-family="Arial, Helvetica, sans-serif" font-size="12.5" font-weight="600" fill="#26251f" text-anchor="start">Telemetry ingest</text>
+<text x="1112" y="757.0" font-family="Arial, Helvetica, sans-serif" font-size="10.5" font-weight="400" fill="#6a6a63" text-anchor="start">gRPC/HTTPS+JSON</text>
+<rect x="1102" y="774" width="276" height="40" rx="6" fill="#ffffff" stroke="#8fb8e0" stroke-width="1"/>
+<text x="1112" y="790.8" font-family="Arial, Helvetica, sans-serif" font-size="12.5" font-weight="600" fill="#26251f" text-anchor="start">Digital Twin backend</text>
+<text x="1112" y="804.0" font-family="Arial, Helvetica, sans-serif" font-size="10.5" font-weight="400" fill="#6a6a63" text-anchor="start">mirrored VSS state</text>
+<rect x="1102" y="821" width="276" height="40" rx="6" fill="#ffffff" stroke="#8fb8e0" stroke-width="1"/>
+<text x="1112" y="837.8" font-family="Arial, Helvetica, sans-serif" font-size="12.5" font-weight="600" fill="#26251f" text-anchor="start">Command API</text>
+<text x="1112" y="851.0" font-family="Arial, Helvetica, sans-serif" font-size="10.5" font-weight="400" fill="#6a6a63" text-anchor="start">actuation requests down</text>
+<rect x="1102" y="868" width="276" height="40" rx="6" fill="#ffffff" stroke="#8fb8e0" stroke-width="1"/>
+<text x="1112" y="884.8" font-family="Arial, Helvetica, sans-serif" font-size="12.5" font-weight="600" fill="#26251f" text-anchor="start">OTA management (SOTA)</text>
+<text x="1112" y="898.0" font-family="Arial, Helvetica, sans-serif" font-size="10.5" font-weight="400" fill="#6a6a63" text-anchor="start">HPC image/tag rollout</text>
+<line x1="990" y1="760" x2="1090" y2="790" stroke="#4a4a45" stroke-width="2" marker-end="url(#arrow)"/>
+<text x="1040.0" y="744" font-family="Arial, Helvetica, sans-serif" font-size="9.5" font-weight="400" fill="#5a5a54" text-anchor="middle">gRPC/HTTPS</text>
+<text x="1040.0" y="782" font-family="Arial, Helvetica, sans-serif" font-size="9.5" font-weight="400" fill="#5a5a54" text-anchor="middle">mTLS1.3</text>
+<line x1="720.0" y1="525" x2="720.0" y2="610" stroke="#4a4a45" stroke-width="2" marker-end="url(#arrow)"/>
+<line x1="740.0" y1="610" x2="740.0" y2="525" stroke="#4a4a45" stroke-width="2" marker-end="url(#arrow)"/>
+<rect x="590.0" y="543.5" width="280" height="48" rx="6" fill="#ffffff" stroke="#2c2c2a" stroke-width="1.3"/>
+<text x="730.0" y="561.5" font-family="Arial, Helvetica, sans-serif" font-size="12" font-weight="700" fill="#141412" text-anchor="middle">Ethernet backbone</text>
+<text x="730.0" y="579.5" font-family="Arial, Helvetica, sans-serif" font-size="9.5" font-weight="400" fill="#5a5a54" text-anchor="middle">gRPC + mTLS1.3 · VSS subtree filter (HPC-level filtering)</text>
+<rect x="250" y="440" width="190" height="48" rx="8" fill="#FCEBEB" stroke="#E24B4A" stroke-width="1.5" stroke-dasharray="4,3"/>
+<text x="260" y="460" font-family="Arial, Helvetica, sans-serif" font-size="10.5" font-weight="700" fill="#791f1f" text-anchor="start">FOTA (separate sub-project)</text>
+<text x="260" y="476" font-family="Arial, Helvetica, sans-serif" font-size="9.5" font-weight="400" fill="#791f1f" text-anchor="start">dual-bank flash, signed image</text>
+<line x1="345.0" y1="440" x2="345.0" y2="390" stroke="#c98a8a" stroke-width="2" marker-end="url(#arrowb)" stroke-dasharray="4,3"/>
+<line x1="30" y1="1035" x2="1570" y2="1035" stroke="#c9c8c0" stroke-width="1"/>
+<rect x="30" y="1050" width="370.0" height="65" rx="6" fill="#F7F7F4" stroke="#c9c8c0" stroke-width="1"/>
+<text x="40" y="1068" font-family="Arial, Helvetica, sans-serif" font-size="11.5" font-weight="700" fill="#26251f" text-anchor="start">PKI / mTLS 1.3 (cross-cutting)</text>
+<text x="40" y="1084" font-family="Arial, Helvetica, sans-serif" font-size="9.5" font-weight="400" fill="#5a5a54" text-anchor="start">Root CA -> zcu-ca / hpc-ca / cloud-ca -> per-device leaf certs.</text>
+<text x="40" y="1098" font-family="Arial, Helvetica, sans-serif" font-size="9.5" font-weight="400" fill="#5a5a54" text-anchor="start">Every link above (ZCU-HPC, HPC-HPC, HPC-Cloud) is mutually authenticated against this chain.</text>
+<rect x="420.0" y="1050" width="370.0" height="65" rx="6" fill="#F7F7F4" stroke="#c9c8c0" stroke-width="1"/>
+<text x="430.0" y="1068" font-family="Arial, Helvetica, sans-serif" font-size="11.5" font-weight="700" fill="#26251f" text-anchor="start">Filtering — two layers</text>
+<text x="430.0" y="1084" font-family="Arial, Helvetica, sans-serif" font-size="9.5" font-weight="400" fill="#5a5a54" text-anchor="start">Zonal level: ZCU MQTT topic allow-list (compile-time).</text>
+<text x="430.0" y="1098" font-family="Arial, Helvetica, sans-serif" font-size="9.5" font-weight="400" fill="#5a5a54" text-anchor="start">HPC level: KUKSA VSS subtree scoping on the HPC-bridge and cloud-gateway services.</text>
+<rect x="810.0" y="1050" width="370.0" height="65" rx="6" fill="#F7F7F4" stroke="#c9c8c0" stroke-width="1"/>
+<text x="820.0" y="1068" font-family="Arial, Helvetica, sans-serif" font-size="11.5" font-weight="700" fill="#26251f" text-anchor="start">SOTA vs FOTA</text>
+<text x="820.0" y="1084" font-family="Arial, Helvetica, sans-serif" font-size="9.5" font-weight="400" fill="#5a5a54" text-anchor="start">SOTA: HPC container image / rootfs update (Mender/swupdate, tag rollout).</text>
+<text x="820.0" y="1098" font-family="Arial, Helvetica, sans-serif" font-size="9.5" font-weight="400" fill="#5a5a54" text-anchor="start">FOTA: ZCU firmware update — separate MCU bootloader sub-project.</text>
+<rect x="1200.0" y="1050" width="370.0" height="65" rx="6" fill="#F7F7F4" stroke="#c9c8c0" stroke-width="1"/>
+<text x="1210.0" y="1068" font-family="Arial, Helvetica, sans-serif" font-size="11.5" font-weight="700" fill="#26251f" text-anchor="start">Digital Key</text>
+<text x="1210.0" y="1084" font-family="Arial, Helvetica, sans-serif" font-size="9.5" font-weight="400" fill="#5a5a54" text-anchor="start">Cloud issues a short-lived signed token.</text>
+<text x="1210.0" y="1098" font-family="Arial, Helvetica, sans-serif" font-size="9.5" font-weight="400" fill="#5a5a54" text-anchor="start">HPC's Digital-key validator checks it before a high-privilege actuation command is allowed through.</text>
+</svg>

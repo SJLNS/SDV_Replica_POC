@@ -1,0 +1,21 @@
+Vehicle.SDVReplica.ZCU1.Temperature:
+  type: sensor
+  datatype: float
+  unit: celsius
+  description: Temperature reading from the ZCU-1 branch sensor.
+
+Vehicle.SDVReplica.ZCU1.RelayA.IsOpen:
+  type: actuator
+  datatype: boolean
+  description: Commanded state of relay A on the ZCU-1 branch.
+
+Vehicle.SDVReplica.ZCU2.Temperature:
+  type: sensor
+  datatype: float
+  unit: celsius
+  description: Temperature reading from the ZCU-2 branch sensor.
+
+Vehicle.SDVReplica.ZCU2.RelayB.IsOpen:
+  type: actuator
+  datatype: boolean
+  description: Commanded state of relay B on the ZCU-2 branch.
