@@ -3,6 +3,16 @@
 All notable changes to this project are documented here.
 Format loosely follows [Keep a Changelog](https://keepachangelog.com/).
 
+## [v0.2.0] - 2026-08-08
+
+### Added
+- `scripts/buildenv.sh` — structured build wrapper for both ZCU firmware targets.
+  Generates dedicated per-stage artifact folders (preprocessed `.i`, assembly `.s`,
+  object `.o`, `.elf`, `.bin`, `.map`), writes a sequenced/timestamped log per run,
+  and fails loudly (banner in terminal + log) on the first broken step rather than
+  continuing. Verified against both a clean build and a deliberately broken source
+  file to confirm the failure path actually triggers correctly.
+
 ## [v0.1.0] - 2026-08-08
 
 ### Added
