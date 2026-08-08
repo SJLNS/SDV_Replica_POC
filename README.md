@@ -1,5 +1,9 @@
 # SDV_Replica_POC
 
+> **Author:** Chittaranjan Baral ([@SJLNS](https://github.com/SJLNS))
+> **Version:** v0.1.0
+> **Last updated:** 2026-08-08
+
 A personal, hands-on replica of a Software-Defined Vehicle zonal architecture: two
 zonal control units (STM32 Discovery, STM32 Nucleo) feeding two edge compute nodes
 (Raspberry Pi 5 running Xen + QNX, BeagleBone Black running Yocto + Docker), bridged
