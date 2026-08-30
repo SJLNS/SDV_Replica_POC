@@ -3,6 +3,26 @@
 All notable changes to this project are documented here.
 Format loosely follows [Keep a Changelog](https://keepachangelog.com/).
 
+## [v0.3.2] - 2026-08-30
+
+### Fixed
+- `scripts/build_console.bat` — second real Windows run (after the v0.3.1 CMake
+  install) failed on all 6 modules with `CMake Error ... Running 'nmake' '-?' failed
+  with: no such file or directory`. Root cause: with no generator explicitly
+  specified, CMake auto-selected the "NMake Makefiles" generator (needs Visual
+  Studio's `nmake.exe`), which isn't installed/usable on this machine, instead of
+  falling back to something compatible with the working `g++`/`arm-none-eabi-gcc`
+  toolchain that the pre-flight check had already confirmed present. Fixed by
+  detecting an actually-available build tool (Ninja preferred, MinGW Makefiles as
+  fallback) during the pre-flight check and explicitly pinning it via `cmake -G`
+  on every module build, instead of trusting CMake's auto-detection.
+- Pre-flight check now also reports build-tool availability (`ninja` /
+  `mingw32-make` / `make`) alongside `cmake`/`g++`/`arm-none-eabi-gcc`, with a
+  direct `winget install Ninja-build.Ninja` suggestion if none are found.
+- Verified: the affected `CMakeLists.txt` files build cleanly under an explicitly
+  pinned generator (tested with Ninja) — confirms the fix mechanism is sound, not
+  just a guess.
+
 ## [v0.3.1] - 2026-08-30
 
 ### Fixed

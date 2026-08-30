@@ -85,6 +85,34 @@ if errorlevel 1 (
   echo   arm-none-eabi-gcc  !C_PASS!OK!C_RESET!
 )
 
+REM --- pick a CMake generator that actually matches an installed build tool ---
+REM CMake's own auto-detection can pick "NMake Makefiles" (needs Visual Studio's
+REM nmake.exe) even when it's not usable - this caused every module to fail on
+REM 2026-08-30's second run. Pin an explicit, working generator instead of trusting
+REM auto-detection.
+set "GENERATOR="
+where ninja >nul 2>&1
+if not errorlevel 1 (
+  set "GENERATOR=Ninja"
+  echo   build tool ^(ninja^)      !C_PASS!OK!C_RESET!
+) else (
+  where mingw32-make >nul 2>&1
+  if not errorlevel 1 (
+    set "GENERATOR=MinGW Makefiles"
+    echo   build tool ^(mingw32-make^) !C_PASS!OK!C_RESET!
+  ) else (
+    where make >nul 2>&1
+    if not errorlevel 1 (
+      set "GENERATOR=MinGW Makefiles"
+      echo   build tool ^(make^)       !C_PASS!OK!C_RESET!
+    ) else (
+      echo   build tool         !C_FAIL!MISSING!C_RESET!  - no ninja/mingw32-make/make found
+      echo   !C_DIM!Install one:  winget install Ninja-build.Ninja!C_RESET!
+      set "MISSING=1"
+    )
+  )
+)
+
 echo !C_HEAD!================================================================!C_RESET!
 if "!MISSING!"=="1" (
   echo !C_FAIL!One or more required tools are missing - see above.!C_RESET!
@@ -246,7 +274,11 @@ echo   !C_INFO![COMPILING...]!C_RESET!
 echo === Building !MOD_NAME! ^(!MOD_PATH!^) - %DATE% %TIME% === > "!LOGFILE!"
 
 set "BUILD_OK=1"
-cmake -S "!FULL_PATH!" -B "!FULL_PATH!\build" >> "!LOGFILE!" 2>&1
+if defined GENERATOR (
+  cmake -G "!GENERATOR!" -S "!FULL_PATH!" -B "!FULL_PATH!\build" >> "!LOGFILE!" 2>&1
+) else (
+  cmake -S "!FULL_PATH!" -B "!FULL_PATH!\build" >> "!LOGFILE!" 2>&1
+)
 if errorlevel 1 set "BUILD_OK=0"
 
 if "!BUILD_OK!"=="1" (

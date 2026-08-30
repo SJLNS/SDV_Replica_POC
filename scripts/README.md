@@ -88,6 +88,17 @@ previous run failed before ever reaching a compiler check): report back and
 we'll sort out the right compiler install for your setup (MinGW-w64, LLVM, or
 Visual Studio Build Tools) rather than guessing here.
 
+**If it reports `build tool MISSING`** (no `ninja`, `mingw32-make`, or `make`
+found): install Ninja, the simplest fix -
+```powershell
+winget install Ninja-build.Ninja
+```
+This was the actual cause of every module failing on the second real run
+(2026-08-30): CMake defaulted to the "NMake Makefiles" generator, which needs
+Visual Studio's `nmake.exe`, instead of something that works with `g++`. The
+pre-flight check now detects and pins a working generator explicitly rather
+than trusting CMake's auto-detection.
+
 Requires `cmake` and either `g++` (HPC modules) or `arm-none-eabi-gcc` (ZCU
 modules) on the system `PATH`, plus PowerShell available for timestamp
 generation (standard on Windows 10/11).
