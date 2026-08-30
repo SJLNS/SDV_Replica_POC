@@ -1,7 +1,7 @@
 # SDV_Replica_POC
 
 > **Author:** Chittaranjan Baral ([@SJLNS](https://github.com/SJLNS))
-> **Version:** v0.4.0
+> **Version:** v0.5.0
 > **Last updated:** 2026-08-30
 
 A personal, hands-on replica of a Software-Defined Vehicle zonal architecture: two
@@ -15,6 +15,7 @@ mTLS PKI, OTA, digital twin) as far as the hardware honestly allows.
 
 ## Start here
 
+- [`docs/SDV_Replica_POC_Master_Plan.md`](docs/SDV_Replica_POC_Master_Plan.md) — the *current plan*: day-by-day sequencing, tailored to solo full-time pacing, current as of v0.5.0
 - [`docs/SDV_Replica_POC_Architecture_Plan.md`](docs/SDV_Replica_POC_Architecture_Plan.md) — the *why*: corrected architecture, protocol stack, phased plan
 - [`docs/SDV_Replica_POC_Execution_Guide.md`](docs/SDV_Replica_POC_Execution_Guide.md) — the *how*: tool installation, HW validation, bring-up commands, BOM
 - [`docs/diagrams/`](docs/diagrams/) — A3 system architecture reference sheet (PDF + SVG)
@@ -45,12 +46,11 @@ test/           integration and hardware-in-the-loop tests
 
 ## Status
 
-Hardware-corrected architecture locked in. C++ build scaffolding in place for all 4
-HPC services (hpc-bridge, cloud-gateway, both branches) - proven to compile, link,
-and run on a host machine; not yet cross-compiled for the actual RPi5/BBB target
-architectures, and gRPC/protobuf logic not yet wired in (see TODOs in each `main.cpp`).
-RPi5 Stage 1 hardware bring-up not yet started. See the execution guide's checklist
-and `CHANGELOG.md` for current progress.
+Real hardware confirmed (see BOM/part numbers in the Execution Guide). Build
+tooling and toolchain proven end-to-end on real dev hardware. Physical board
+bring-up not yet started — see
+[`docs/SDV_Replica_POC_Master_Plan.md`](docs/SDV_Replica_POC_Master_Plan.md)
+for the current day-by-day plan and exactly where things stand.
 
 ## License
 

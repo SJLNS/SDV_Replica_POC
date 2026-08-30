@@ -3,6 +3,16 @@
 All notable changes to this project are documented here.
 Format loosely follows [Keep a Changelog](https://keepachangelog.com/).
 
+## [v0.5.0] - 2026-08-30
+
+### Added
+- `docs/SDV_Replica_POC_Master_Plan.md` — consolidated, day-by-day execution plan
+  for the remaining work, tailored to solo full-time pacing. Supersedes the
+  informal phase list from earlier sessions with a single current source of truth,
+  incorporating everything confirmed/fixed through v0.1.0–v0.4.0. Covers ~33 working
+  days (~6.5 weeks) to a working core system through OTA, plus an open-ended stretch
+  block (predictive analytics, Digital Twin, Digital Key, Voice UI, ZCU FOTA, SOME/IP).
+
 ## [v0.4.0] - 2026-08-30
 
 ### Fixed
