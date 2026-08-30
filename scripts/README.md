@@ -65,11 +65,28 @@ Logs/Build/<module path>/build_YYYYMMDD_HHMMSS.log
 A `BUILD SESSION VERDICT` summary listing every module built this run and its
 result prints at the end of each menu action.
 
-**Status: not yet run end-to-end on real Windows at time of writing.** Every
-individual command inside it (`cmake -S`/`cmake --build` per module) was
-verified separately, but the script as a whole needs its first real run on
-your machine to confirm. Report back the exact on-screen output of anything
-that looks wrong.
+**Status: not yet run end-to-end successfully on real Windows at time of writing.**
+The first real run (2026-08-30) failed on all 6 modules with `'cmake' is not
+recognized` — CMake was never installed on that machine. Fixed in v2 with a
+pre-flight tool check that catches this immediately (see below) rather than
+burying it in per-module logs, plus a real fix for a source-count bug found in
+the same run. The pre-flight check itself, and each individual `cmake`
+command, are verified; the script's full menu flow end-to-end on Windows still
+needs its first clean run to confirm.
+
+**If the pre-flight check reports `cmake MISSING`:**
+
+```powershell
+winget install --id Kitware.CMake -e
+```
+Close and reopen the terminal afterward (same PATH-refresh reason as the ARM
+toolchain install) before re-running `build_console.bat`.
+
+**If it reports `g++ MISSING`** (needed for the 4 HPC C++ services — this
+hasn't been confirmed present or absent on your machine yet, since the
+previous run failed before ever reaching a compiler check): report back and
+we'll sort out the right compiler install for your setup (MinGW-w64, LLVM, or
+Visual Studio Build Tools) rather than guessing here.
 
 Requires `cmake` and either `g++` (HPC modules) or `arm-none-eabi-gcc` (ZCU
 modules) on the system `PATH`, plus PowerShell available for timestamp

@@ -3,6 +3,31 @@
 All notable changes to this project are documented here.
 Format loosely follows [Keep a Changelog](https://keepachangelog.com/).
 
+## [v0.3.1] - 2026-08-30
+
+### Fixed
+- `scripts/build_console.bat` — first real Windows run (all 6 modules) failed with
+  `'cmake' is not recognized as an internal or external command` on every single
+  module. Root cause: CMake was never installed on this machine at all — `buildenv.sh`
+  never needed it (calls `arm-none-eabi-gcc` directly), so the gap was invisible until
+  this script, which relies on CMake, exposed it. Not a code or repo problem. Fix is a
+  local install (`winget install --id Kitware.CMake -e`), documented in
+  `scripts/README.md`.
+- `scripts/build_console.bat` — source file count showed `0 file(s)` for every module
+  in the same run, including ones with real source files. Root cause: the v1 for-loop
+  counting logic. Replaced with a `dir /s /b ... | find /c /v ""` count, a more
+  reliable standard batch idiom.
+
+### Added
+- `scripts/build_console.bat` — pre-flight tool check (`cmake`, `g++`,
+  `arm-none-eabi-gcc`) now runs automatically before the menu appears, so a missing
+  tool is obvious immediately instead of discovered by reading 6 separate log files.
+  Also selectable from the menu (option 9) to re-check anytime.
+- `scripts/build_console.bat` — ANSI colour output (VT100 escape codes, native on
+  Windows 10 1511+/11, no registry changes needed): magenta/yellow banner and section
+  headers, cyan `[COMPILING...]`, bright green `PASS`, bright red `FAIL`. Deliberately
+  a different palette from the cyan/green reference example this was styled after.
+
 ## [v0.3.0] - 2026-08-30
 
 ### Added
