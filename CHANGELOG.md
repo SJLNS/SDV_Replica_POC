@@ -3,6 +3,33 @@
 All notable changes to this project are documented here.
 Format loosely follows [Keep a Changelog](https://keepachangelog.com/).
 
+## [v0.3.0] - 2026-08-30
+
+### Added
+- Real C++ build scaffolding for all 4 HPC services: `hpc1-rpi5/dom0-services/hpc-bridge`,
+  `hpc1-rpi5/dom0-services/cloud-gateway`, `hpc2-bbb/containers/hpc-bridge`,
+  `hpc2-bbb/containers/cloud-gateway`. Each has a `CMakeLists.txt` (C++17) and a
+  `src/main.cpp` skeleton with explicit TODOs for wiring in real gRPC/protobuf logic
+  and mTLS 1.3 credentials. Verified: all 4 compile, link, and run cleanly with `g++`/
+  CMake, each printing its own distinct identity - confirmed as 4 genuinely separate,
+  correctly-wired skeletons, not one file copied four times.
+- `scripts/build_console.bat` — a cmd.exe-native, menu-driven build console covering
+  all 6 real modules (2 ZCU firmware targets + 4 HPC C++ services): clean/incremental
+  builds scoped to all modules, ZCU-only, HPC-only, or a single specific module: each
+  module run reports source-file count, live compiling status, a PASS/FAIL verdict
+  with its own timestamped log under `Logs/Build/<module path>/`, and a build-session
+  summary at the end. Complements `scripts/buildenv.sh` (which remains the Git-Bash,
+  staged-artifact tool for the ZCU targets specifically) rather than replacing it.
+  **Not yet run end-to-end on real Windows at time of writing — first real run still
+  needed to confirm.**
+
+### Fixed
+- `.gitattributes` hardened to force LF line endings on every text/source/script file
+  (`* text=auto eol=lf` plus explicit per-extension rules), after 46 files were found
+  locally modified with zero real content changes — pure CRLF drift introduced by
+  Windows checkout behavior. `.bat` files are the one deliberate exception (`eol=crlf`),
+  matching native Windows batch-file convention.
+
 ## [v0.2.0] - 2026-08-08
 
 ### Added

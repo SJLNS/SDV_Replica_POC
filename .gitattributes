@@ -5,3 +5,26 @@
 *.zip binary
 *.bin binary
 *.elf binary
+
+# Force LF for every text/source/script file, regardless of the checking-out
+# machine's OS settings. This is what actually prevents the CRLF drift seen
+# on 2026-08-08 (46 files flagged "modified" with zero real content changes,
+# purely from Windows converting LF -> CRLF on checkout) from recurring.
+* text=auto eol=lf
+*.sh text eol=lf
+*.py text eol=lf
+*.c text eol=lf
+*.h text eol=lf
+*.cpp text eol=lf
+*.hpp text eol=lf
+*.s text eol=lf
+*.ld text eol=lf
+*.proto text eol=lf
+*.md text eol=lf
+*.yml text eol=lf
+*.yaml text eol=lf
+*.json text eol=lf
+*.vspec text eol=lf
+*.bat text eol=crlf
+CMakeLists.txt text eol=lf
+

@@ -1,8 +1,8 @@
 # scripts
 
 > **Author:** Chittaranjan Baral ([@SJLNS](https://github.com/SJLNS))
-> **Version:** v0.1.0
-> **Last updated:** 2026-08-08
+> **Version:** v0.3.0
+> **Last updated:** 2026-08-30
 
 Build/dev tooling that isn't specific to one board.
 
@@ -36,3 +36,42 @@ build-output/<target>/
 
 Requires `arm-none-eabi-gcc`, `arm-none-eabi-objcopy`, and `arm-none-eabi-size`
 on `PATH` (see Execution Guide Section 2 for install steps).
+
+## build_console.bat
+
+cmd.exe-native, menu-driven build console covering **all 6 real modules** in
+the repo — both ZCU firmware targets and all 4 HPC C++ services
+(hpc-bridge/cloud-gateway × HPC-1/HPC-2). Complements buildenv.sh rather than
+replacing it: buildenv.sh stays the Git-Bash tool for ZCU-only staged builds;
+this is the broader, cmd-native console covering everything, HPC included.
+
+**Run from cmd.exe (not Git Bash), from the repo root — double-click the file
+in File Explorer, or from an open cmd window:**
+
+```cmd
+cd C:\Git_source\SDV_Replica_POC
+scripts\build_console.bat
+```
+
+Menu options: clean/incremental build of all modules, ZCU-only, HPC-only, or
+one specific module picked by number. Each module build reports its source
+file count, a live `[COMPILING...]` status, and a final `PASS`/`FAIL` verdict
+with its own timestamped log under:
+
+```
+Logs/Build/<module path>/build_YYYYMMDD_HHMMSS.log
+```
+
+A `BUILD SESSION VERDICT` summary listing every module built this run and its
+result prints at the end of each menu action.
+
+**Status: not yet run end-to-end on real Windows at time of writing.** Every
+individual command inside it (`cmake -S`/`cmake --build` per module) was
+verified separately, but the script as a whole needs its first real run on
+your machine to confirm. Report back the exact on-screen output of anything
+that looks wrong.
+
+Requires `cmake` and either `g++` (HPC modules) or `arm-none-eabi-gcc` (ZCU
+modules) on the system `PATH`, plus PowerShell available for timestamp
+generation (standard on Windows 10/11).
+

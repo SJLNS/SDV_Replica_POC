@@ -1,8 +1,8 @@
 # SDV_Replica_POC
 
 > **Author:** Chittaranjan Baral ([@SJLNS](https://github.com/SJLNS))
-> **Version:** v0.1.0
-> **Last updated:** 2026-08-08
+> **Version:** v0.3.0
+> **Last updated:** 2026-08-30
 
 A personal, hands-on replica of a Software-Defined Vehicle zonal architecture: two
 zonal control units (STM32 Discovery, STM32 Nucleo) feeding two edge compute nodes
@@ -33,10 +33,24 @@ ota/            HPC (SOTA) and ZCU (FOTA) update tooling
 test/           integration and hardware-in-the-loop tests
 ```
 
+## Build tooling
+
+- `scripts/buildenv.sh` — Git Bash, staged-artifact build wrapper for the two ZCU
+  firmware targets (preprocessed/asm/obj/elf/bin/map, sequenced logs, loud failure
+  banners).
+- `scripts/build_console.bat` — cmd.exe-native, menu-driven build console covering
+  all 6 real modules (2 ZCU + 4 HPC C++ services): clean/incremental, scoped to all
+  modules, ZCU-only, HPC-only, or one specific module, each with its own timestamped
+  log under `Logs/Build/`.
+
 ## Status
 
-Hardware-corrected architecture locked in. Currently bringing up HPC-1 (Raspberry Pi 5,
-Xen). See the execution guide's checklist for current progress.
+Hardware-corrected architecture locked in. C++ build scaffolding in place for all 4
+HPC services (hpc-bridge, cloud-gateway, both branches) - proven to compile, link,
+and run on a host machine; not yet cross-compiled for the actual RPi5/BBB target
+architectures, and gRPC/protobuf logic not yet wired in (see TODOs in each `main.cpp`).
+RPi5 Stage 1 hardware bring-up not yet started. See the execution guide's checklist
+and `CHANGELOG.md` for current progress.
 
 ## License
 
