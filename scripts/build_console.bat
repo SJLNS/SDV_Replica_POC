@@ -309,15 +309,16 @@ echo.
 echo !C_TITLE!================================================================!C_RESET!
 echo !C_TITLE!  BUILD SESSION VERDICT!C_RESET!
 echo !C_TITLE!================================================================!C_RESET!
+set "VERDICT_LINES=0"
 if exist "!SESSION_SUMMARY!" (
   for /f "usebackq delims=" %%L in ("!SESSION_SUMMARY!") do (
     set "LINE=%%L"
-    echo !LINE! | findstr /b "[PASS]" >nul && echo !C_PASS!%%L!C_RESET!
-    echo !LINE! | findstr /b "[FAIL]" >nul && echo !C_FAIL!%%L!C_RESET!
-    echo !LINE! | findstr /b "[SKIP]" >nul && echo !C_SKIP!%%L!C_RESET!
+    set "VERDICT_LINES=1"
+    if "!LINE:~0,6!"=="[PASS]" echo !C_PASS!!LINE!!C_RESET!
+    if "!LINE:~0,6!"=="[FAIL]" echo !C_FAIL!!LINE!!C_RESET!
+    if "!LINE:~0,6!"=="[SKIP]" echo !C_SKIP!!LINE!!C_RESET!
   )
-) else (
-  echo   (no modules were built this session)
 )
+if "!VERDICT_LINES!"=="0" echo   (no modules were built this session)
 echo !C_TITLE!================================================================!C_RESET!
 exit /b

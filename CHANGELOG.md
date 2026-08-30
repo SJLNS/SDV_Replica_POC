@@ -3,6 +3,23 @@
 All notable changes to this project are documented here.
 Format loosely follows [Keep a Changelog](https://keepachangelog.com/).
 
+## [v0.3.3] - 2026-08-30
+
+### Fixed
+- `scripts/build_console.bat` — third real Windows run: all 6 modules now PASS
+  (confirmed by screenshot), but the `BUILD SESSION VERDICT` summary at the end
+  printed its header with an empty list underneath — no `[PASS]`/`[FAIL]` lines
+  shown at all. Root cause: `findstr "[PASS]"` treats `[` and `]` as regex
+  character-class syntax, not literal brackets, so the search pattern was
+  actually "match a line starting with any one of the characters P, A, or S" —
+  which never matched a line starting with a literal `[` character. Every
+  summary line was silently skipped. Replaced with a substring comparison
+  (`!LINE:~0,6!`) that checks the literal first 6 characters of each line
+  against `[PASS]`/`[FAIL]`/`[SKIP]` directly — verified the indexing is
+  correct for all three tags before shipping the fix.
+- Verified: all 6 modules still build correctly (Ninja generator) after the
+  change — this was a display-only bug, the actual build logic was untouched.
+
 ## [v0.3.2] - 2026-08-30
 
 ### Fixed
