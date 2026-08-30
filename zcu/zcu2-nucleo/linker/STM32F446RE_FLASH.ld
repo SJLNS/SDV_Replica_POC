@@ -1,11 +1,10 @@
-/* Placeholder memory map — replace with the exact FLASH/RAM origin+length
- * from your confirmed STM32 Discovery part number's datasheet before
- * flashing real hardware. Values below match a generic STM32F4-class part
- * (1MB flash @ 0x08000000, 128KB SRAM @ 0x20000000) so the skeleton links. */
+/* STM32F446RET6 (NUCLEO-F446RE, Nucleo-64) - confirmed via datasheet:
+ * 512KB flash @ 0x08000000, 128KB SRAM @ 0x20000000 (single contiguous
+ * block - unlike the F407, the F446 has no separate CCM RAM region). */
 
 MEMORY
 {
-  FLASH (rx)  : ORIGIN = 0x08000000, LENGTH = 1024K
+  FLASH (rx)  : ORIGIN = 0x08000000, LENGTH = 512K
   RAM   (rwx) : ORIGIN = 0x20000000, LENGTH = 128K
 }
 

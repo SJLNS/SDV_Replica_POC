@@ -21,7 +21,7 @@ working bench setup, roughly ordered by how soon you'll need it.
 | RPi5 official active cooler | RPi5 throttles under sustained load; you *will* sustain load once Xen + QNX DomU + Docker are all running | Strongly recommended |
 | RPi5 official USB-C power supply (5V/5A) | underpowering is the #1 cause of "random" RPi5 instability | Strongly recommended |
 | NVMe SSD + PCIe HAT for RPi5 | optional, but meaningfully faster/more reliable than SD for a Xen Dom0 doing real I/O | Nice to have |
-| W5500 SPI-Ethernet breakout module | only if you confirm the Discovery board has no onboard Ethernet PHY (per our earlier flag — check this first) | Conditional |
+| W5500 SPI-Ethernet breakout module, **x2** (one per ZCU) | confirmed needed — neither STM32F407G-DISC1 nor NUCLEO-F446RE has onboard Ethernet (part numbers confirmed 2026-08-30) | Must |
 | Breadboard, jumper wires, resistor kit | wiring sensors/actuators to the ZCU GPIO/ADC pins | Must |
 | A few cheap sensors/actuators to start with: DHT22 (temp/humidity), a potentiometer (ADC test), 2x relay modules, a small DC motor or two, a handful of LEDs | Phase 1 bring-up needs *something* to read/drive before you trust the pipeline | Must |
 | Multimeter | verifying wiring before you trust firmware — non-negotiable for the "bench-test in isolation" step in the plan | Must |
@@ -214,10 +214,10 @@ to a multi-board chain.
 3. Flash a bare "blink an LED" project first — this alone validates toolchain, debugger,
    and board power.
 4. Confirm the onboard user button / LED works before touching your own wiring.
-5. **Now check the Ethernet PHY question you deferred**: if Nucleo, check the schematic
-   for the LAN8742A (or equivalent) RMII PHY; if Discovery, check the schematic/datasheet
-   for any Ethernet connector. Confirm before you write a line of network code — this
-   was flagged as an open risk and it's cheap to resolve now.
+5. **Ethernet PHY question resolved (2026-08-30):** confirmed via datasheet — neither
+   the STM32F407G-DISC1 (STM32F407VGT6) nor the NUCLEO-F446RE (STM32F446RET6, a
+   Nucleo-64 board) has an onboard Ethernet PHY. Wire up a W5500 SPI-Ethernet module
+   to both boards (see BOM, §0) before writing ZCU network code.
 6. Bench-test each sensor/actuator you'll wire up, **in isolation, with a multimeter**,
    before connecting it to the board. Confirm voltage levels match the board's GPIO
    tolerance (3.3V logic — do not feed 5V sensor outputs directly into GPIO pins without

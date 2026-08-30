@@ -1,7 +1,8 @@
-/* Placeholder memory map — replace with the exact FLASH/RAM origin+length
- * from your confirmed STM32 Discovery part number's datasheet before
- * flashing real hardware. Values below match a generic STM32F4-class part
- * (1MB flash @ 0x08000000, 128KB SRAM @ 0x20000000) so the skeleton links. */
+/* STM32F407VGT6 (STM32F407G-DISC1 Discovery board) - confirmed via datasheet:
+ * 1MB flash @ 0x08000000, 128KB SRAM1+SRAM2 (contiguous) @ 0x20000000.
+ * A further 64KB CCM RAM exists at 0x10000000 but is a separate, non-DMA-
+ * accessible region - not included here; add as its own MEMORY entry later
+ * if a driver specifically needs core-coupled RAM for performance. */
 
 MEMORY
 {

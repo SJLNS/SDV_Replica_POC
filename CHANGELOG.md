@@ -3,6 +3,31 @@
 All notable changes to this project are documented here.
 Format loosely follows [Keep a Changelog](https://keepachangelog.com/).
 
+## [v0.4.0] - 2026-08-30
+
+### Fixed
+- Real STM32 part numbers confirmed via datasheet: **STM32F407VGT6** (ZCU-1,
+  STM32F407G-DISC1) and **STM32F446RET6** (ZCU-2, NUCLEO-F446RE). Placeholder linker
+  scripts replaced with real, verified memory maps:
+  - ZCU-1: `zcu/zcu1-discovery/linker/STM32F407VG_FLASH.ld` — 1024K flash @
+    `0x08000000`, 128K RAM @ `0x20000000` (renamed from `STM32_GENERIC.ld`).
+  - ZCU-2: `zcu/zcu2-nucleo/linker/STM32F446RE_FLASH.ld` — 512K flash @
+    `0x08000000`, 128K RAM @ `0x20000000` (renamed from `STM32_GENERIC.ld`; this
+    also fixes a real bug — the old placeholder used the *wrong* 1024K flash size
+    inherited from the F407 template, on a chip that only has 512K).
+  - `scripts/buildenv.sh` updated to map each target to its correct linker script
+    by name instead of a shared generic filename.
+  - Verified: both targets build via both paths (`buildenv.sh` and CMake/Ninja),
+    and the resulting `.map` files were inspected directly to confirm the linked
+    binaries actually carry the correct FLASH/RAM sizes (`0x00100000`/`0x00080000`
+    bytes respectively) — not just that they compiled.
+- **Ethernet PHY question resolved — bigger than previously scoped.** Confirmed via
+  datasheet that **neither** ZCU board has onboard Ethernet (previously only the
+  Discovery board was flagged as uncertain; the Nucleo-64 form factor of the
+  NUCLEO-F446RE also has none — only Nucleo-144 boards like the F429ZI/F767ZI do).
+  BOM and Execution Guide updated: W5500 SPI-Ethernet module needed **x2**, one per
+  ZCU, not conditionally on one.
+
 ## [v0.3.3] - 2026-08-30
 
 ### Fixed

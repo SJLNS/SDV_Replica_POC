@@ -127,8 +127,16 @@ build_target() {
     "$CC" $CPU_FLAGS -c "$src_dir/src/$base.s" -o "$out_dir/obj/$base.o" || return 1
   objs+=("$out_dir/obj/$base.o")
 
+  # Linker script filename is per-target (named after the confirmed real MCU part,
+  # not a shared generic placeholder) - map target -> linker script explicitly.
+  case "$target" in
+    zcu1-discovery) LD_SCRIPT="STM32F407VG_FLASH.ld" ;;
+    zcu2-nucleo)    LD_SCRIPT="STM32F446RE_FLASH.ld" ;;
+    *) echo "${RED}Unknown target for linker script mapping: $target${RESET}"; return 1 ;;
+  esac
+
   run_logged "Link ${target}.elf" \
-    "$CC" $CPU_FLAGS -T"$src_dir/linker/STM32_GENERIC.ld" -nostdlib -Wl,--gc-sections \
+    "$CC" $CPU_FLAGS -T"$src_dir/linker/$LD_SCRIPT" -nostdlib -Wl,--gc-sections \
       -Wl,-Map="$out_dir/map/${target}.map" -o "$out_dir/elf/${target}.elf" "${objs[@]}" || return 1
 
   run_logged "Generate ${target}.bin" \

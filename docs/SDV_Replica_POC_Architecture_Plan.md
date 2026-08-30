@@ -374,7 +374,7 @@ each one is independently testable before you wire it to the next.
 
 | Risk | Impact | Mitigation |
 |---|---|---|
-| STM32 Discovery lacks Ethernet PHY | blocks ZCU-1 networking | confirm part number; fall back to W5500 SPI module, no application-layer change needed |
+| ~~STM32 Discovery lacks Ethernet PHY~~ **RESOLVED 2026-08-30** | both ZCU boards need external Ethernet | confirmed via datasheet: neither STM32F407G-DISC1 nor NUCLEO-F446RE has onboard Ethernet — W5500 SPI module required on **both**, no application-layer change needed |
 | BBB 512MB RAM under container load | services OOM-killed | keep images minimal (Alpine), monitor memory in Phase 3, trim KUKSA/feeder footprint before adding more services |
 | QNX SDP BSP support for RPi5 varies by release | Phase 2 stalls | verify BSP availability for your exact SDP version before committing the architecture to it; have a Yocto-on-RPi5-DomU fallback in your back pocket |
 | KUKSA Databroker mTLS support unclear at your pinned version | weakens the security story | verify in Phase 5; use a TLS-terminating sidecar if native client-cert verification isn't there |
