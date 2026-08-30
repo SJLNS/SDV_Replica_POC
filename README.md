@@ -1,7 +1,7 @@
 # SDV_Replica_POC
 
 > **Author:** Chittaranjan Baral ([@SJLNS](https://github.com/SJLNS))
-> **Version:** v0.3.0
+> **Version:** v0.4.0
 > **Last updated:** 2026-08-30
 
 A personal, hands-on replica of a Software-Defined Vehicle zonal architecture: two
