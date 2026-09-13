@@ -3,6 +3,38 @@
 All notable changes to this project are documented here.
 Format loosely follows [Keep a Changelog](https://keepachangelog.com/).
 
+## [v0.6.0] - 2026-08-30
+
+### Changed
+- **HPC-1 hypervisor decision finalized: Xen, not Jailhouse.** Both are technically
+  possible on the RPi5 (it has the virtualization extensions Jailhouse needs), so this
+  was a genuine choice — resolved on current support maturity: Xen has an actively
+  maintained RPi5 path (community Dom0/DomD build, Debian package, referenced as a
+  supported Dom0 target in Zephyr's own docs); mainline Jailhouse's last officially
+  announced new board was the RPi4 (2020), with no confirmed RPi5 target. The
+  "Xen vs Jailhouse" framing is removed from the docs — this is no longer an open
+  question. (A related project, hvisor, does target RPi5 with a Jailhouse-inspired
+  design — noted as an optional future side-quest, not conflated with Jailhouse itself.)
+- **ZCU RTOS decision: FreeRTOS on ZCU-1, Zephyr RTOS on ZCU-2 — deliberately two
+  different RTOSes.** Chosen to mirror how real vehicle zonal networks are frequently
+  multi-vendor (different zones, different software stacks), which was judged worth
+  the extra integration cost for a project whose explicit goal is touching as many
+  real SDV concepts as the hardware allows. FreeRTOS on ZCU-1 is low-risk (official
+  ST/CubeMX middleware). Zephyr on ZCU-2 is a real, separate build-system integration
+  (`west`, its own SDK/Devicetree layer) — budgeted as its own dedicated block in the
+  Master Plan (Days 15–19, not squeezed into existing slots), with an explicit
+  fallback to FreeRTOS-on-both if it overruns.
+- `docs/SDV_Replica_POC_Architecture_Plan.md` — hardware table and corrections section
+  updated; new §2.1 "Finalized decisions" documents both decisions above with full
+  reasoning, so they don't get re-litigated later.
+- `docs/SDV_Replica_POC_Master_Plan.md` — day-by-day plan renumbered from Day 15
+  onward (Zephyr adds 2 real days) to reflect the RTOS decision; core system estimate
+  updated from ~33 to ~35 working days (~7 weeks full-time); risk register updated
+  with the Zephyr overrun risk and its fallback.
+- `docs/diagrams/SDV_Replica_POC_Software_Stack.svg` — new standalone diagram showing
+  the finalized internal software stack (FreeRTOS/Zephyr on the ZCUs, Xen/Dom0/QNX
+  DomU on HPC-1, Yocto+Docker with no hypervisor/RTOS on HPC-2, both cloud branches).
+
 ## [v0.5.0] - 2026-08-30
 
 ### Added

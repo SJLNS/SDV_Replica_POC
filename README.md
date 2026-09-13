@@ -1,7 +1,7 @@
 # SDV_Replica_POC
 
 > **Author:** Chittaranjan Baral ([@SJLNS](https://github.com/SJLNS))
-> **Version:** v0.5.0
+> **Version:** v0.6.0
 > **Last updated:** 2026-08-30
 
 A personal, hands-on replica of a Software-Defined Vehicle zonal architecture: two
@@ -46,9 +46,11 @@ test/           integration and hardware-in-the-loop tests
 
 ## Status
 
-Real hardware confirmed (see BOM/part numbers in the Execution Guide). Build
-tooling and toolchain proven end-to-end on real dev hardware. Physical board
-bring-up not yet started — see
+Real hardware confirmed (see BOM/part numbers in the Execution Guide). RTOS/
+hypervisor decisions finalized: FreeRTOS (ZCU-1) + Zephyr RTOS (ZCU-2); Xen
+(HPC-1, no longer an open question vs. Jailhouse) — see architecture doc §2.1.
+Build tooling and toolchain proven end-to-end on real dev hardware. Physical
+board bring-up not yet started — see
 [`docs/SDV_Replica_POC_Master_Plan.md`](docs/SDV_Replica_POC_Master_Plan.md)
 for the current day-by-day plan and exactly where things stand.
 

@@ -19,23 +19,60 @@ plan, corrected against what the four boards you own can actually do.
 
 | Node | Board | Role | OS / Isolation | Cloud |
 |---|---|---|---|---|
-| ZCU-1 | STM32 Discovery | sensor/actuator I/O | Embedded C, bare-metal or FreeRTOS | — |
-| ZCU-2 | STM32 Nucleo | sensor/actuator I/O | Embedded C, bare-metal or FreeRTOS | — |
-| HPC-1 | Raspberry Pi 5 (16GB) | edge compute, gateway | Xen: Dom0 (Linux, 1 core) + DomU (QNX eval, 3 cores) | AWS |
+| ZCU-1 | STM32 Discovery (STM32F407VGT6) | sensor/actuator I/O | Embedded C, **FreeRTOS** | — |
+| ZCU-2 | STM32 Nucleo (STM32F446RET6) | sensor/actuator I/O | Embedded C, **Zephyr RTOS** | — |
+| HPC-1 | Raspberry Pi 5 (16GB) | edge compute, gateway | **Xen** (final — see §2.1): Dom0 (Linux, 1 core) + DomU (QNX eval, 3 cores) | AWS |
 | HPC-2 | BeagleBone Black Rev C | edge compute, gateway | Yocto Linux (native, single core) + Docker containers | Azure |
 
-**Corrections carried over from the last round** (do not re-litigate these — they are
+**Corrections carried over from earlier rounds** (do not re-litigate these — they are
 hardware facts, not preferences):
 - Jailhouse cannot run on the BBB (Cortex-A8 has no virtualization extensions). BBB
   isolation story = Docker/OCI containers + cgroups/namespaces, not a type-1 hypervisor.
-- BBB is single-core; no core partitioning is possible there.
+- BBB is single-core; no core partitioning is possible there — and no RTOS either
+  (ZCU-2 already owns all real-time sensor/actuator work; the BBB is a pure gateway).
 - RPi5 gets the only real hypervisor (Xen): 1 core → Dom0 control plane, 3 cores → QNX
   DomU workload — this is where your "3 cores" intent actually lands.
-- STM32 Discovery Ethernet is unconfirmed — plan the firmware against an abstract
-  network interface (see §6, Phase 1) so swapping in a W5500 SPI-Ethernet module later
-  doesn't touch application logic.
+- STM32 Discovery Ethernet is confirmed absent (STM32F407G-DISC1 has no onboard PHY);
+  same for the Nucleo-64 form factor of the STM32 Nucleo (NUCLEO-F446RE) — both ZCUs
+  need a W5500 SPI-Ethernet module (see BOM in the Execution Guide).
 
-**Physical topology** (only real Ethernet links — no direct ZCU-to-ZCU or
+### 2.1 Finalized decisions (no longer open questions)
+
+**HPC-1 hypervisor: Xen, not Jailhouse.** Both are technically possible on the RPi5's
+Cortex-A76 (it has the virtualization extensions Jailhouse needs, unlike the BBB), so
+this was a genuine choice, not a hardware constraint — resolved by comparing current
+support maturity rather than architecture. Xen has an actively maintained RPi5 path (a
+community Dom0/DomD build, Debian's `xen-hypervisor-4.17-arm64` package, and RPi5 is
+referenced as a supported Dom0 target in Zephyr's own docs). Mainline Jailhouse's last
+officially announced new board was the **RPi4**, in 2020 — no confirmed RPi5 target
+exists in the actual Jailhouse project. (A separate, younger Rust-based project called
+**hvisor**, inspired by Jailhouse's static-partitioning design, does list RPi5 on its
+roadmap — that's a legitimate thing to explore later as its own side-quest, but it is
+not "Jailhouse on RPi5" and shouldn't be conflated with it.) Given HPC-1 bring-up is
+already this project's single highest-risk block, stacking an unproven hypervisor path
+on top of it was the wrong tradeoff.
+
+**ZCU-1: FreeRTOS. ZCU-2: Zephyr RTOS — two different RTOSes, deliberately.** Both
+ZCUs are functionally symmetric (same sensor/actuator role, mirrored branches), so
+running two different RTOSes is optional complexity chosen for a specific reason, not
+forced by the hardware the way HPC-1/HPC-2's asymmetry was. The reason: real vehicle
+zonal networks are frequently multi-vendor, with different zones running entirely
+different software stacks — two ZCUs on two different RTOSes is a closer analogy to
+that reality than two identical stacks would be, and it was judged worth the extra
+integration cost for a project whose explicit goal is touching as many real SDV
+concepts as the hardware allows.
+- **FreeRTOS on ZCU-1** is low-risk: ST officially supports it as CubeMX middleware for
+  the F407 family, and it drops into the existing toolchain directly.
+- **Zephyr on ZCU-2** is a real, bounded side-quest: its own build system (`west`),
+  its own CMake/Devicetree layer, a separate SDK setup — comparable in size to the
+  `build_console.bat` debugging arc earlier in this project. Budgeted as its own block
+  in the Master Plan, not squeezed into the MQTT-feeder integration slot.
+- **Fallback condition:** if Zephyr bring-up overruns its budget, the fallback is
+  FreeRTOS on both ZCUs — not bare-metal on either. Bare-metal-vs-RTOS is settled
+  regardless of which RTOS wins on ZCU-2.
+- Neither RTOS goes on the BBB — see the corrections above.
+
+ (only real Ethernet links — no direct ZCU-to-ZCU or
 HPC-to-far-cloud wiring exists):
 
 ```
@@ -67,7 +104,7 @@ filtering.
 
 | Layer | Technology | Rationale |
 |---|---|---|
-| ZCU firmware | Embedded C, FreeRTOS (recommended over bare-metal once you add TLS + MQTT) | mbedTLS + MQTT client are easiest to reason about with an RTOS scheduler |
+| ZCU firmware | Embedded C, **FreeRTOS on ZCU-1 / Zephyr RTOS on ZCU-2** (see §2.1 for why two different RTOSes) | mbedTLS + MQTT client are easiest to reason about with an RTOS scheduler; deliberate RTOS diversity mirrors real multi-vendor zonal networks |
 | ZCU ↔ HPC | MQTT 3.1.1/5 over TLS 1.3, mutual auth | mature Cortex-M libraries exist; gRPC/DDS are too heavy for the MCU |
 | ZCU security | mbedTLS (client cert + key, verify HPC server cert) | de facto standard embedded TLS stack, actively maintained |
 | HPC middleware | Eclipse KUKSA Databroker (Docker container), VSS signal tree | resource-efficient, gRPC-native, standards-based schema (replaces S-CORE) |
@@ -202,12 +239,20 @@ each one is independently testable before you wire it to the next.
 - Goal: each STM32 board reads its sensors and drives its actuators locally.
 - Steps:
   1. Bring up GPIO/ADC/PWM drivers for whatever sensors/actuators/relays you've wired.
-  2. Add FreeRTOS with a sensor-poll task and an actuator-command task communicating via
-     a queue — this task boundary is where the network layer plugs in later.
-  3. Bench-test each sensor/actuator in isolation (multimeter/scope, not just serial
+  2. **ZCU-1:** add FreeRTOS with a sensor-poll task and an actuator-command task
+     communicating via a queue — this task boundary is where the network layer plugs
+     in later.
+  3. **ZCU-2:** add Zephyr with the equivalent task split, using Zephyr's own
+     build system (`west`) and Devicetree-based board configuration rather than the
+     plain CMake setup ZCU-1 uses — this is a separate, bounded integration effort
+     (see §2.1), not a drop-in swap for FreeRTOS.
+  4. Bench-test each sensor/actuator in isolation (multimeter/scope, not just serial
      print) before trusting the data.
 - Exit criteria: ZCU-1 and ZCU-2 each print live sensor values over UART/serial console
-  and respond to a hardcoded actuation command.
+  and respond to a hardcoded actuation command — ZCU-1 via a FreeRTOS task, ZCU-2 via
+  a Zephyr thread.
+- **Fallback:** if Zephyr bring-up on ZCU-2 overruns its budgeted time, fall back to
+  FreeRTOS on both ZCUs rather than letting it block the rest of the plan — see §2.1.
 
 ### Phase 2 — HPC-1 bring-up (RPi5: Xen + Dom0 + QNX DomU)
 

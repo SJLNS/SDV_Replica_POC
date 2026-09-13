@@ -2,11 +2,11 @@
 ## Tailored, step-wise, full-time solo schedule
 
 > **Author:** Chittaranjan Baral ([@SJLNS](https://github.com/SJLNS))
-> **Version:** v1.0
-> **As of:** 2026-08-30 — repo tag v0.4.0
+> **Version:** v1.1
+> **As of:** 2026-08-30 — repo tag v0.6.0 (adds FreeRTOS+Zephyr RTOS decision, Xen finalized)
 
 This supersedes the informal phase list from earlier — it's the single current
-source of truth, consolidating everything confirmed/fixed across v0.1.0–v0.4.0
+source of truth, consolidating everything confirmed/fixed across v0.1.0–v0.6.0
 into one forward plan. The two existing docs (`SDV_Replica_POC_Architecture_Plan.md`,
 `SDV_Replica_POC_Execution_Guide.md`) still hold the detailed *how* for each
 step — this document is the *sequencing and pacing* layer on top, tailored to
@@ -20,7 +20,7 @@ working on this solo, full-time.
 |---|---|
 | Repo | Live, public, tagged `v0.4.0` — github.com/SJLNS/SDV_Replica_POC |
 | Real hardware confirmed | ZCU-1: STM32F407G-DISC1 (STM32F407VGT6) · ZCU-2: NUCLEO-F446RE (STM32F446RET6) · HPC-1: Raspberry Pi 5 16GB · HPC-2: BeagleBone Black Rev C |
-| ZCU firmware | Skeleton compiles/links with real, correct memory maps (v0.4.0) — no real sensor/actuator logic yet |
+| ZCU firmware | Skeleton compiles/links with real, correct memory maps (v0.4.0) — no real sensor/actuator logic yet. RTOS decided: **FreeRTOS on ZCU-1, Zephyr RTOS on ZCU-2** (v0.6.0), not yet implemented |
 | HPC C++ services | All 4 (hpc-bridge × 2, cloud-gateway × 2) compile/link/run as host sanity builds — no real gRPC logic yet, not cross-compiled for target arch yet |
 | Build tooling | `scripts/buildenv.sh` (Git Bash, ZCU) and `scripts/build_console.bat` (cmd.exe, all 6 modules) both proven working end-to-end on your actual laptop |
 | PKI | Script proven to work (root → intermediate → leaf, self-signature verified) — never run "for real" against actual boards yet |
@@ -175,52 +175,70 @@ moving — the Yocto build itself takes hours of unattended machine time.
 
 ---
 
-### Days 15–17 — ZCU real sensor/actuator I/O
+### Days 15–19 — ZCU real sensor/actuator I/O (FreeRTOS + Zephyr)
 
 - **Day 15:** Wire whatever sensors/actuators arrived from the BOM order (or
-  whatever you already have) to ZCU-1. Bench-test each with a multimeter
+  whatever you already have) to both ZCUs. Bench-test each with a multimeter
   *before* connecting to the board — confirm 3.3V logic compatibility.
-- **Day 16:** Write real GPIO/ADC/PWM driver code replacing the placeholder
-  loop in `zcu1-discovery/src/main.c`. Confirm real sensor values read
-  correctly over serial console before adding networking.
-- **Day 17:** Repeat Day 15–16 for ZCU-2.
+- **Day 16 (ZCU-1, FreeRTOS):** Write real GPIO/ADC/PWM driver code inside a
+  FreeRTOS sensor-poll task and actuator-command task, replacing the
+  placeholder loop in `zcu1-discovery/src/main.c`. Confirm real sensor values
+  read correctly over serial console before adding networking.
+- **Day 17 (ZCU-2, Zephyr — environment setup):** Install the Zephyr SDK, run
+  `west init`/`west update`, get a stock Zephyr sample blinking on the
+  NUCLEO-F446RE board target before writing any real code — this is a new
+  build system, prove it works empty before trusting it with real logic.
+- **Day 18 (ZCU-2, Zephyr — real drivers):** Port the same sensor-poll /
+  actuator-command split to Zephyr's threading + device driver API
+  (Devicetree-based, not the raw register HAL used on ZCU-1).
+- **Day 19:** Buffer day for Zephyr integration issues — treat this the same
+  way Day 13's Yocto buffer is treated: an explicit expectation, not
+  optimism.
 
 **Exit criterion:** Both ZCUs read real sensor data and can drive a real
-actuator, confirmed over serial console (no networking yet).
+actuator, confirmed over serial console (no networking yet) — ZCU-1 via a
+FreeRTOS task, ZCU-2 via a Zephyr thread.
+
+**Fallback:** if Zephyr bring-up is still not working by the end of Day 19,
+fall back to FreeRTOS on both ZCUs (per the architecture doc §2.1) and move
+on — don't let this block become its own Xen-style overrun.
 
 ---
 
-### Days 18–19 — KUKSA + VSS, real deployment
+### Days 20–21 — KUKSA + VSS, real deployment
 
-- **Day 18:** Finalize `vss/vss_custom.vspec` against your actual wired
+- **Day 20:** Finalize `vss/vss_custom.vspec` against your actual wired
   sensors (not the placeholder example signals). Deploy KUKSA Databroker via
   Docker on both HPCs, pointed at real leaf certs from Day 14.
-- **Day 19:** Smoke-test with `kuksa-client`: set a value, subscribe, confirm
+- **Day 21:** Smoke-test with `kuksa-client`: set a value, subscribe, confirm
   round-trip on both HPCs independently.
 
 **Exit criterion:** Both HPCs run a databroker with your real VSS tree, reachable over TLS.
 
 ---
 
-### Days 20–21 — W5500 wiring + MQTT feeder integration
+### Days 22–23 — W5500 wiring + MQTT feeder integration
 
 *(W5500 modules should have arrived by now if ordered on Day 1 — if not,
 this is the point where a shipping delay actually starts costing you time;
 everything before this didn't need them.)*
 
-- **Day 20:** Wire W5500 to both ZCU boards, bring up the SPI-Ethernet driver,
+- **Day 22:** Wire W5500 to both ZCU boards, bring up the SPI-Ethernet driver
+  (as a FreeRTOS task on ZCU-1, a Zephyr networking sample/thread on ZCU-2),
   confirm each ZCU gets a real IP on the switch.
-- **Day 21:** Add MQTT client + mbedTLS to ZCU firmware, write the
-  MQTT-to-KUKSA feeder process on each HPC, prove one real sensor value
-  travels ZCU → MQTT → HPC → VSS tree end to end.
+- **Day 23:** Add an MQTT client + mbedTLS to both ZCU firmwares (again, two
+  different integrations — FreeRTOS+mbedTLS vs Zephyr's own MQTT/TLS
+  subsystem), write the MQTT-to-KUKSA feeder process on each HPC, prove one
+  real sensor value travels ZCU → MQTT → HPC → VSS tree end to end, from
+  *both* ZCUs independently.
 
 **Exit criterion:** A live sensor reading on ZCU-1 appears in HPC-1's VSS
 tree within a reasonable latency; an actuation command set via `kuksa-client`
-reaches a real ZCU-1 relay/motor.
+reaches a real ZCU-1 relay/motor. Same proof independently for ZCU-2/HPC-2.
 
 ---
 
-### Days 22–24 — HPC-to-HPC gRPC bridge, real logic
+### Days 24–26 — HPC-to-HPC gRPC bridge, real logic
 
 - Replace the `TODO` placeholders in all 4 `main.cpp` files with real
   gRPC/protobuf logic against `proto/hpc_bridge.proto`.
@@ -236,13 +254,13 @@ the cloud boundary.
 
 ---
 
-### Days 25–29 — Cloud integration (both branches)
+### Days 27–31 — Cloud integration (both branches)
 
-- **Days 25–26:** AWS IoT Core — register your own `cloud-ca`, provision the
+- **Days 27–28:** AWS IoT Core — register your own `cloud-ca`, provision the
   HPC-1 Thing, issue+register the device cert, fill in real logic in
   `cloud-gateway`'s `main.cpp`.
-- **Days 27–28:** Same for Azure IoT Hub / HPC-2.
-- **Day 29:** End-to-end proof both directions: a ZCU sensor value visible in
+- **Days 29–30:** Same for Azure IoT Hub / HPC-2.
+- **Day 31:** End-to-end proof both directions: a ZCU sensor value visible in
   a cloud dashboard/log, and a cloud-issued command reaching a real ZCU
   actuator, for both AWS and Azure branches independently.
 
@@ -251,7 +269,7 @@ cloud-to-actuator, independently.
 
 ---
 
-### Days 30–33 — OTA (SOTA)
+### Days 32–35 — OTA (SOTA)
 
 - HPC-1: Docker image versioning + rollback tag kept; QNX DomU image
   versioning.
@@ -263,18 +281,20 @@ cloud-to-actuator, independently.
 
 ---
 
-### Day 34+ — Stretch features (open-ended, deliberately last)
+### Day 36+ — Stretch features (open-ended, deliberately last)
 
 In priority order (per the original architecture doc's MoSCoW list):
 1. Predictive analytics on the QNX DomU (or Yocto DomU fallback)
 2. Digital Twin (cloud-side mirrored state + simple dashboard)
 3. Digital Key (cloud-issued short-lived token, HPC-side validator)
 4. Voice UI (thin client → cloud intent API)
-5. ZCU FOTA (separate bootloader sub-project — genuinely its own effort)
+5. ZCU FOTA (separate bootloader sub-project — genuinely its own effort,
+   and now a two-bootloader effort given FreeRTOS + Zephyr are different
+   update mechanisms)
 6. SOME/IP as an HPC-HPC service-discovery exercise, if you want the extra learning
 
 **No exit criterion for this block** — it's explicitly open-ended, scope it
-to your remaining energy/interest once the core system (through Day 33) works.
+to your remaining energy/interest once the core system (through Day 35) works.
 
 ---
 
@@ -286,19 +306,19 @@ to your remaining energy/interest once the core system (through Day 33) works.
 | RPi5 Xen (§Days 6–10) | 5 (highest overrun risk) | Week 2 |
 | BBB Yocto+Docker (§Days 11–13, parallel-eligible) | 3 | overlaps Week 2 |
 | PKI real (§Day 14) | 1 | Week 3 start |
-| ZCU real I/O (§Days 15–17) | 3 | Week 3 |
-| KUKSA+VSS (§Days 18–19) | 2 | Week 3 |
-| MQTT feeder + W5500 (§Days 20–21) | 2 | Week 4 |
-| HPC bridge real logic (§Days 22–24) | 3 | Week 4 |
-| Cloud integration (§Days 25–29) | 5 | Week 5 |
-| OTA (§Days 30–33) | 4 | Week 6 (partial) |
-| **Core system total** | **~33 working days** | **~6.5 weeks full-time** |
+| ZCU real I/O incl. Zephyr bring-up (§Days 15–19) | 5 (2nd-highest overrun risk) | Week 3 |
+| KUKSA+VSS (§Days 20–21) | 2 | Week 4 |
+| MQTT feeder + W5500 (§Days 22–23) | 2 | Week 4 |
+| HPC bridge real logic (§Days 24–26) | 3 | Week 5 |
+| Cloud integration (§Days 27–31) | 5 | Week 6 |
+| OTA (§Days 32–35) | 4 | Week 7 (partial) |
+| **Core system total** | **~35 working days** | **~7 weeks full-time** |
 | Stretch features | open-ended | beyond |
 
 This is a real estimate, not a rounded-down best case — it already assumes
-the Xen week runs its full length and one buffer day for Yocto. If Xen goes
-faster than budgeted, that time flows straight into starting ZCU work early
-rather than sitting unused.
+the Xen week runs its full length, one buffer day for Yocto, and one buffer
+day for Zephyr. If any of those go faster than budgeted, that time flows
+straight into starting the next block early rather than sitting unused.
 
 ---
 
@@ -310,8 +330,9 @@ Carried forward from the risk register, still open:
 |---|---|---|
 | QNX BSP has no confirmed RPi5 support | Days 8–10 | Explicit fallback to Yocto-in-DomU instead of QNX, decided by Day 8, not discovered on Day 10 |
 | Yocto build dependency hell | Days 11–13 | Day 13 is an explicit buffer, not optimism |
-| W5500 shipping delay | Day 20 | Ordered Day 1, ~3 weeks of runway before it's actually needed |
-| KUKSA Databroker mTLS support unclear at pinned version | Day 18 | Verify before building the security story on it; sidecar fallback already documented in the architecture doc |
+| Zephyr bring-up on ZCU-2 (new build system, own SDK/Devicetree layer) runs long | Days 17–19 | Day 19 is an explicit buffer; hard fallback to FreeRTOS on both ZCUs if still broken (architecture doc §2.1) |
+| W5500 shipping delay | Day 22 | Ordered Day 1, ~3 weeks of runway before it's actually needed |
+| KUKSA Databroker mTLS support unclear at pinned version | Day 20 | Verify before building the security story on it; sidecar fallback already documented in the architecture doc |
 
 ---
 
@@ -329,3 +350,4 @@ Carried forward from the risk register, still open:
   with what actually happened — the plan above is a good-faith estimate, not
   a commitment, and it should flex based on what Days 1–5 actually show about
   your pace.
+
