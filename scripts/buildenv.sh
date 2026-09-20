@@ -6,7 +6,7 @@
 #
 # @author      Chittaranjan Baral
 # @date        20-Sep-2026
-# @version     1.1.0
+# @version     1.2.0
 #
 # @copyright   Copyright (c) 2026 CRB. All rights reserved.
 #
@@ -105,6 +105,10 @@
 # 1.1.0       20-Sep-2026    Chittaranjan Baral       Added mcal/rcc_driver.c
 #                                                      to the zcu1-discovery
 #                                                      build (RCC clock-enable
+#                                                      driver).
+# 1.2.0       20-Sep-2026    Chittaranjan Baral       Added mcal/gpio_driver.c
+#                                                      to the zcu1-discovery
+#                                                      build (GPIO mode/output
 #                                                      driver).
 # ------------------------------------------------------------------------------
 ###############################################################################
@@ -422,6 +426,61 @@ build_target()
 
         base=rcc_driver
         src_rel="mcal/rcc_driver.c"
+
+        # ---------------------------------------------------------------------
+        # Preprocess C source
+        # ---------------------------------------------------------------------
+
+        run_logged "Preprocess $base.c" \
+            "$CC" $CFLAGS \
+            -I"$src_dir/inc" \
+            -E "$src_dir/src/$src_rel" \
+            -o "$out_dir/preprocessed/$base.i" \
+            || return 1
+
+
+        # ---------------------------------------------------------------------
+        # Generate assembly
+        # ---------------------------------------------------------------------
+
+        run_logged "Compile $base.c -> assembly" \
+            "$CC" $CFLAGS \
+            -I"$src_dir/inc" \
+            -S "$src_dir/src/$src_rel" \
+            -o "$out_dir/asm/$base.s" \
+            || return 1
+
+
+        # ---------------------------------------------------------------------
+        # Generate object file
+        # ---------------------------------------------------------------------
+
+        run_logged "Compile $base.c -> object" \
+            "$CC" $CFLAGS \
+            -I"$src_dir/inc" \
+            -c "$src_dir/src/$src_rel" \
+            -o "$out_dir/obj/$base.o" \
+            || return 1
+
+        objs+=("$out_dir/obj/$base.o")
+    fi
+
+
+    ###########################################################################
+    #                 APPLICATION SOURCE: mcal/gpio_driver.c                   #
+    ###########################################################################
+
+    # Same rationale as the mcal/rcc_driver.c block above: this file lives in
+    # src/mcal/, not directly in src/, so "src_rel" carries the real path
+    # while "base" names this file's own distinct output artifacts.
+    #
+    # Only zcu1-discovery has this file today (ZCU-2 uses Zephyr's own build
+    # system instead of this script).
+
+    if [ "$target" = "zcu1-discovery" ]; then
+
+        base=gpio_driver
+        src_rel="mcal/gpio_driver.c"
 
         # ---------------------------------------------------------------------
         # Preprocess C source

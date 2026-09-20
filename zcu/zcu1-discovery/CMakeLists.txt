@@ -55,6 +55,9 @@
 # Version     Date            Author                  Description
 # ------------------------------------------------------------------------------
 # 1.0.0       20-Sep-2026    Chittaranjan Baral       Initial version
+# 1.1.0       20-Sep-2026    Chittaranjan Baral       Added mcal/gpio_driver.c
+#                                                      to the zcu1-discovery
+#                                                      build.
 # ------------------------------------------------------------------------------
 ###############################################################################
 
@@ -186,6 +189,7 @@ add_executable(zcu1_discovery.elf
 
     # MCU abstraction / low-level drivers
     src/mcal/rcc_driver.c
+	src/mcal/gpio_driver.c
 )
 
 
