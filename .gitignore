@@ -8,6 +8,9 @@ build-output/
 *.hex
 *.map
 
+# build_console.bat generated logs
+Logs/
+
 # Yocto
 hpc2-bbb/yocto/build*/
 hpc2-bbb/yocto/downloads/
@@ -36,3 +39,7 @@ pki/certs/**
 .vscode/
 .idea/
 .DS_Store
+
+# IDE workspace metadata (Eclipse/STM32CubeIDE - not portable, machine-specific)
+.cproject
+.project
