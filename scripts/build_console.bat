@@ -1,32 +1,51 @@
 @echo off
 setlocal enabledelayedexpansion
 REM ================================================================
-REM  SDV_Replica_POC - Build & Compilation Console  (v2)
+REM  SDV_Replica_POC - Build & Compilation Console  (v4)
 REM
 REM  Run from cmd.exe (double-click, or from an open cmd window) -
-REM  NOT Git Bash. Complements scripts\buildenv.sh (Git Bash, ZCU-only,
-REM  staged artifacts) with a cmd-native console covering all 6 real
-REM  modules: both ZCU firmware targets and all 4 HPC C++ services.
+REM  NOT Git Bash.
+REM
+REM  CHANGES IN v4 - the v3 bash-delegation approach is REMOVED:
+REM   v3 tried to have this script call scripts\buildenv.sh via Git
+REM   Bash's bash.exe, to get the same granular per-file staged output
+REM   buildenv.sh produces. Across three real attempts this hit three
+REM   different genuine bugs (a batch paren-nesting parser crash, a
+REM   Windows-vs-POSIX path translation failure, and a second path
+REM   translation failure even after converting to forward slashes) -
+REM   each fixed individually, but the pattern itself (cmd.exe calling
+REM   into bash.exe, crossing a Windows-path/POSIX-path boundary) kept
+REM   producing new failure modes that could not be verified without a
+REM   real Windows machine to test on.
+REM
+REM   v4 fixes this at the root: ZCU modules are now compiled with
+REM   arm-none-eabi-gcc DIRECTLY from this batch file, staged exactly
+REM   like buildenv.sh (preprocess -> compile to assembly -> compile
+REM   to object, per source file, then link -> objcopy -> size) - with
+REM   ZERO cross-shell calls and zero POSIX-path handling anywhere.
+REM   Every path used is a plain Windows path throughout. This doesn't
+REM   just fix the last bug - it removes the entire category of bug.
+REM
+REM   The per-file compile/link recipe below was verified directly
+REM   against this repo's actual real source files (not stand-ins)
+REM   before being included here - see the accompanying explanation.
+REM
+REM   The HPC C++ services are UNCHANGED - still plain CMake
+REM   configure+build, since that path has never had a problem.
 REM
 REM  CHANGES IN v2 (fixing the 2026-08-30 first-run failures):
-REM   - Every module failed with 'cmake' is not recognized -> added a
-REM     pre-flight tool check (cmake / g++ / arm-none-eabi-gcc) that
-REM     runs BEFORE the menu, so a missing tool is obvious immediately
-REM     instead of discovered by reading 6 separate log files.
-REM   - Source count showed 0 file(s) for every module (a real bug in
-REM     the v1 for-loop counting logic) -> replaced with a dir+find
-REM     based count, a more reliable standard batch idiom.
-REM   - Added ANSI colour output (VT100 escape codes - supported
-REM     natively on Windows 10 1511+ / Windows 11 cmd.exe, no registry
-REM     changes needed): magenta/yellow banner and headers, cyan for
-REM     in-progress, bright green PASS, bright red FAIL - a distinct
-REM     palette from the cyan/green reference example this was styled
-REM     after, by request.
+REM   - Pre-flight tool check (cmake / g++ / arm-none-eabi-gcc) runs
+REM     before the menu, so a missing tool is obvious immediately.
+REM   - Source count uses a dir+find idiom, not a for-loop counter.
+REM   - ANSI colour output (VT100 escape codes).
 REM
-REM  STILL TRUE: this script could not be executed on real Windows
-REM  before being handed to you. The pre-flight check and per-module
-REM  steps were each verified individually; report back the exact
-REM  on-screen output of anything that still looks wrong.
+REM  STILL TRUE: this exact file has not been executed end-to-end on
+REM  real Windows before being handed to you. The individual compiler/
+REM  linker commands were verified directly against this repo's real
+REM  source files in a Linux sandbox (proving the compile RECIPE is
+REM  correct); the batch script wrapping them has not itself been run
+REM  on Windows yet. Report back the exact on-screen output of
+REM  anything that looks wrong.
 REM ================================================================
 
 REM --- build an ESC character for ANSI colour codes ---
@@ -49,6 +68,13 @@ popd
 set "LOG_ROOT=%REPO_ROOT%\Logs\Build"
 set "SESSION_SUMMARY=%TEMP%\sdv_replica_poc_session_%RANDOM%.txt"
 
+REM --- ARM toolchain (used directly for ZCU modules - see v4 note above) ---
+set "ARM_CC=arm-none-eabi-gcc"
+set "ARM_OBJCOPY=arm-none-eabi-objcopy"
+set "ARM_SIZE=arm-none-eabi-size"
+set "ARM_CFLAGS=-mcpu=cortex-m4 -mthumb -mfloat-abi=soft -Wall -Wextra -ffreestanding -O0 -g"
+set "ARM_CPUFLAGS=-mcpu=cortex-m4 -mthumb -mfloat-abi=soft"
+
 call :PREFLIGHT
 goto MENU
 
@@ -63,7 +89,7 @@ set "MISSING=0"
 
 where cmake >nul 2>&1
 if errorlevel 1 (
-  echo   cmake              !C_FAIL!MISSING!C_RESET!  - required for every module, both ZCU and HPC
+  echo   cmake              !C_FAIL!MISSING!C_RESET!  - required for the 4 HPC C++ services
   set "MISSING=1"
 ) else (
   echo   cmake              !C_PASS!OK!C_RESET!
@@ -85,11 +111,7 @@ if errorlevel 1 (
   echo   arm-none-eabi-gcc  !C_PASS!OK!C_RESET!
 )
 
-REM --- pick a CMake generator that actually matches an installed build tool ---
-REM CMake's own auto-detection can pick "NMake Makefiles" (needs Visual Studio's
-REM nmake.exe) even when it's not usable - this caused every module to fail on
-REM 2026-08-30's second run. Pin an explicit, working generator instead of trusting
-REM auto-detection.
+REM --- pick a CMake generator that actually matches an installed build tool (HPC modules only) ---
 set "GENERATOR="
 where ninja >nul 2>&1
 if not errorlevel 1 (
@@ -250,17 +272,13 @@ if not exist "!FULL_PATH!" (
   exit /b
 )
 
-REM --- source count: dir+find idiom, more reliable than a for-loop counter ---
+REM --- source count: dir+find idiom ---
 set "SRC_COUNT=0"
 if exist "!FULL_PATH!\src" (
   for /f %%N in ('dir /s /b "!FULL_PATH!\src\*.c" "!FULL_PATH!\src\*.cpp" "!FULL_PATH!\src\*.s" 2^>nul ^| find /c /v ""') do set "SRC_COUNT=%%N"
 )
 echo   Source count    : !SRC_COUNT! file(s)
 echo !C_DIV!================================================================!C_RESET!
-
-if /i "!MOD_MODE!"=="clean" (
-  if exist "!FULL_PATH!\build" rmdir /s /q "!FULL_PATH!\build"
-)
 
 set "MODLOGDIR=!LOG_ROOT!\!MOD_PATH!"
 if not exist "!MODLOGDIR!" mkdir "!MODLOGDIR!" >nul 2>&1
@@ -270,20 +288,32 @@ for /f "usebackq delims=" %%T in (`powershell -NoProfile -Command "Get-Date -For
 if "!TS!"=="" set "TS=nodate"
 set "LOGFILE=!MODLOGDIR!\build_!TS!.log"
 
-echo   !C_INFO![COMPILING...]!C_RESET!
-echo === Building !MOD_NAME! ^(!MOD_PATH!^) - %DATE% %TIME% === > "!LOGFILE!"
-
 set "BUILD_OK=1"
-if defined GENERATOR (
-  cmake -G "!GENERATOR!" -S "!FULL_PATH!" -B "!FULL_PATH!\build" >> "!LOGFILE!" 2>&1
-) else (
-  cmake -S "!FULL_PATH!" -B "!FULL_PATH!\build" >> "!LOGFILE!" 2>&1
-)
-if errorlevel 1 set "BUILD_OK=0"
 
-if "!BUILD_OK!"=="1" (
-  cmake --build "!FULL_PATH!\build" >> "!LOGFILE!" 2>&1
+if /i "!MOD_PATH:~0,4!"=="zcu\" (
+  set "ZCU_TARGET=!MOD_PATH:zcu\=!"
+  echo === Building !MOD_NAME! - %DATE% %TIME% === > "!LOGFILE!"
+  call :COMPILE_ZCU !ZCU_TARGET! !MOD_MODE!
   if errorlevel 1 set "BUILD_OK=0"
+) else (
+  if /i "!MOD_MODE!"=="clean" (
+    if exist "!FULL_PATH!\build" rmdir /s /q "!FULL_PATH!\build"
+  )
+
+  echo   !C_INFO![COMPILING...]!C_RESET!
+  echo === Building !MOD_NAME! ^(!MOD_PATH!^) - %DATE% %TIME% === > "!LOGFILE!"
+
+  if defined GENERATOR (
+    cmake -G "!GENERATOR!" -S "!FULL_PATH!" -B "!FULL_PATH!\build" >> "!LOGFILE!" 2>&1
+  ) else (
+    cmake -S "!FULL_PATH!" -B "!FULL_PATH!\build" >> "!LOGFILE!" 2>&1
+  )
+  if errorlevel 1 set "BUILD_OK=0"
+
+  if "!BUILD_OK!"=="1" (
+    cmake --build "!FULL_PATH!\build" >> "!LOGFILE!" 2>&1
+    if errorlevel 1 set "BUILD_OK=0"
+  )
 )
 
 if "!BUILD_OK!"=="1" (
@@ -302,6 +332,146 @@ if "!BUILD_OK!"=="1" (
 )
 echo.
 exit /b
+
+REM ================================================================
+REM  Native, direct arm-none-eabi-gcc build for a ZCU target - no
+REM  CMake, no bash, no cross-shell calls. Mirrors scripts\buildenv.sh
+REM  step for step (preprocess -> assembly -> object per source file,
+REM  then link -> objcopy -> size), using plain Windows paths only.
+REM
+REM  %1 = target name (zcu1-discovery | zcu2-nucleo)
+REM  %2 = clean | incremental
+REM
+REM  Uses GOTO for error handling instead of nested if/else blocks -
+REM  this is a deliberate choice after repeated batch parser issues
+REM  with deeply nested parenthesized blocks elsewhere in this file.
+:COMPILE_ZCU
+set "ZT=%~1"
+set "ZMODE=%~2"
+set "ZDIR=!REPO_ROOT!\zcu\!ZT!"
+set "ZOUT=!REPO_ROOT!\build-output\!ZT!"
+set ZOBJS=
+
+if /i "!ZMODE!"=="clean" if exist "!ZOUT!" rmdir /s /q "!ZOUT!"
+
+if not exist "!ZOUT!\preprocessed" mkdir "!ZOUT!\preprocessed" >nul 2>&1
+if not exist "!ZOUT!\asm" mkdir "!ZOUT!\asm" >nul 2>&1
+if not exist "!ZOUT!\obj" mkdir "!ZOUT!\obj" >nul 2>&1
+if not exist "!ZOUT!\obj\mcal" mkdir "!ZOUT!\obj\mcal" >nul 2>&1
+if not exist "!ZOUT!\elf" mkdir "!ZOUT!\elf" >nul 2>&1
+if not exist "!ZOUT!\bin" mkdir "!ZOUT!\bin" >nul 2>&1
+if not exist "!ZOUT!\map" mkdir "!ZOUT!\map" >nul 2>&1
+
+echo   !C_INFO![COMPILING...]!C_RESET!
+
+REM ---- main.c (present on both ZCU targets) ----
+call :ZCU_COMPILE_C "!ZDIR!" "!ZOUT!" "." main
+if errorlevel 1 exit /b 1
+set ZOBJS=!ZOBJS! "!ZOUT!\obj\main.o"
+
+REM ---- target-specific extra sources ----
+if /i "!ZT!"=="zcu1-discovery" (
+  set "ZLD=STM32F407VG_FLASH.ld"
+
+  call :ZCU_COMPILE_C "!ZDIR!" "!ZOUT!" "mcal" rcc_driver
+  if errorlevel 1 exit /b 1
+  set ZOBJS=!ZOBJS! "!ZOUT!\obj\mcal\rcc_driver.o"
+
+  call :ZCU_COMPILE_C "!ZDIR!" "!ZOUT!" "mcal" gpio_driver
+  if errorlevel 1 exit /b 1
+  set ZOBJS=!ZOBJS! "!ZOUT!\obj\mcal\gpio_driver.o"
+) else (
+  set "ZLD=STM32F446RE_FLASH.ld"
+)
+
+REM ---- startup.s (present on both, always a plain assemble - no
+REM      preprocess/assembly-generation stages, it already IS assembly) ----
+"!ARM_CC!" !ARM_CPUFLAGS! -c "!ZDIR!\src\startup.s" -o "!ZOUT!\obj\startup.o" >> "!LOGFILE!" 2>&1
+if errorlevel 1 goto :ZCU_STEP_FAILED_startup
+echo   !C_PASS!OK!C_RESET!  Assemble startup.s -^> object
+set ZOBJS=!ZOBJS! "!ZOUT!\obj\startup.o"
+goto :ZCU_STARTUP_DONE
+:ZCU_STEP_FAILED_startup
+echo   !C_FAIL![FAIL] Assemble startup.s!C_RESET!
+exit /b 1
+:ZCU_STARTUP_DONE
+
+REM ---- link ----
+"!ARM_CC!" !ARM_CPUFLAGS! -T"!ZDIR!\linker\!ZLD!" -nostdlib -Wl,--gc-sections -Wl,-Map="!ZOUT!\map\!ZT!.map" -o "!ZOUT!\elf\!ZT!.elf" !ZOBJS! >> "!LOGFILE!" 2>&1
+if errorlevel 1 goto :ZCU_STEP_FAILED_link
+echo   !C_PASS!OK!C_RESET!  Link !ZT!.elf
+goto :ZCU_LINK_DONE
+:ZCU_STEP_FAILED_link
+echo   !C_FAIL![FAIL] Link !ZT!.elf!C_RESET!
+exit /b 1
+:ZCU_LINK_DONE
+
+REM ---- objcopy ----
+"!ARM_OBJCOPY!" -O binary "!ZOUT!\elf\!ZT!.elf" "!ZOUT!\bin\!ZT!.bin" >> "!LOGFILE!" 2>&1
+if errorlevel 1 goto :ZCU_STEP_FAILED_bin
+echo   !C_PASS!OK!C_RESET!  Generate !ZT!.bin
+goto :ZCU_BIN_DONE
+:ZCU_STEP_FAILED_bin
+echo   !C_FAIL![FAIL] Generate !ZT!.bin!C_RESET!
+exit /b 1
+:ZCU_BIN_DONE
+
+REM ---- size report ----
+"!ARM_SIZE!" "!ZOUT!\elf\!ZT!.elf"
+"!ARM_SIZE!" "!ZOUT!\elf\!ZT!.elf" >> "!LOGFILE!" 2>&1
+
+exit /b 0
+
+REM ================================================================
+REM  Compile one C source file: preprocess, then assembly, then
+REM  object - three separate steps, matching buildenv.sh exactly.
+REM
+REM  %1 = target dir (full path)     %2 = output dir (full path)
+REM  %3 = subfolder under src\, or "." for none
+REM  %4 = base filename, no extension
+:ZCU_COMPILE_C
+set "CDIR=%~1"
+set "COUT=%~2"
+set "CSUB=%~3"
+set "CBASE=%~4"
+
+if /i "!CSUB!"=="." (
+  set "CSRC=!CDIR!\src\!CBASE!.c"
+  set "CASM=!COUT!\asm\!CBASE!.s"
+  set "CPRE=!COUT!\preprocessed\!CBASE!.i"
+  set "COBJ=!COUT!\obj\!CBASE!.o"
+) else (
+  set "CSRC=!CDIR!\src\!CSUB!\!CBASE!.c"
+  set "CASM=!COUT!\asm\!CBASE!.s"
+  set "CPRE=!COUT!\preprocessed\!CBASE!.i"
+  set "COBJ=!COUT!\obj\!CSUB!\!CBASE!.o"
+)
+
+"!ARM_CC!" !ARM_CFLAGS! -I"!CDIR!\inc" -E "!CSRC!" -o "!CPRE!" >> "!LOGFILE!" 2>&1
+if errorlevel 1 goto :CCOMPILE_FAILED_pre
+echo   !C_PASS!OK!C_RESET!  Preprocess !CBASE!.c
+goto :CCOMPILE_PRE_DONE
+:CCOMPILE_FAILED_pre
+echo   !C_FAIL![FAIL] Preprocess !CBASE!.c!C_RESET!
+exit /b 1
+:CCOMPILE_PRE_DONE
+
+"!ARM_CC!" !ARM_CFLAGS! -I"!CDIR!\inc" -S "!CSRC!" -o "!CASM!" >> "!LOGFILE!" 2>&1
+if errorlevel 1 goto :CCOMPILE_FAILED_asm
+echo   !C_PASS!OK!C_RESET!  Compile !CBASE!.c -^> assembly
+goto :CCOMPILE_ASM_DONE
+:CCOMPILE_FAILED_asm
+echo   !C_FAIL![FAIL] Compile !CBASE!.c -^> assembly!C_RESET!
+exit /b 1
+:CCOMPILE_ASM_DONE
+
+"!ARM_CC!" !ARM_CFLAGS! -I"!CDIR!\inc" -c "!CSRC!" -o "!COBJ!" >> "!LOGFILE!" 2>&1
+if errorlevel 1 goto :CCOMPILE_FAILED_obj
+echo   !C_PASS!OK!C_RESET!  Compile !CBASE!.c -^> object
+exit /b 0
+:CCOMPILE_FAILED_obj
+echo   !C_FAIL![FAIL] Compile !CBASE!.c -^> object!C_RESET!
+exit /b 1
 
 REM ================================================================
 :PRINT_VERDICT
