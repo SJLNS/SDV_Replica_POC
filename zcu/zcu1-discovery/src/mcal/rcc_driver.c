@@ -47,11 +47,13 @@
 /*                        GLOBAL FUNCTION DEFINITIONS                         */
 /*============================================================================*/
 
+/* Enable AHB1 clock for GPIOA as per RM0090. */
 void RCC_GPIOA_ClockEnable(void)
 {
     RCC_AHB1ENR_REG |= (1UL << RCC_AHB1ENR_GPIOAEN_BIT);
 }
 
+/* Enable AHB1 clock for GPIOD as per RM0090. */
 void RCC_GPIOD_ClockEnable(void)
 {
     RCC_AHB1ENR_REG |= (1UL << RCC_AHB1ENR_GPIODEN_BIT);

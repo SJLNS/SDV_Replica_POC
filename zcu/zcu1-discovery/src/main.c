@@ -60,7 +60,7 @@
 /*============================================================================*/
 
 #include "mcal/rcc_driver.h"
-
+#include "mcal/gpio_driver.h"
 
 /*============================================================================*/
 /*                          LOCAL MACROS                                      */
@@ -152,11 +152,28 @@ int main(void)
     RCC_GPIOA_ClockEnable();
     RCC_GPIOD_ClockEnable();
 
+    GPIOD_MODER_PD12_SetOutput();
+    GPIOD_MODER_PD13_SetOutput();
+    GPIOD_MODER_PD14_SetOutput();
+    GPIOD_MODER_PD15_SetOutput();
+
     for (;;)
     {
         tick_count++;
 
-        delay_cycles(100000UL);
+        GPIOD_ODR_PD12_SetHigh();
+        GPIOD_ODR_PD13_SetHigh();
+        GPIOD_ODR_PD14_SetHigh();
+        GPIOD_ODR_PD15_SetHigh();
+
+
+        delay_cycles(200000UL);
+
+
+        GPIOD_ODR_PD12_SetLow();
+        GPIOD_ODR_PD13_SetLow();
+        GPIOD_ODR_PD14_SetLow();
+        GPIOD_ODR_PD15_SetLow();
 
         /*
          * TODO:
