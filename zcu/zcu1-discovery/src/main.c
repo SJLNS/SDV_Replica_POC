@@ -38,7 +38,7 @@
  * @bringup
  *   1. Build and link this skeleton successfully to generate an ELF.
  *   2. Flash the ELF to the STM32 Discovery board and confirm execution.
- *   3. Add a real GPIO toggle using STM32 HAL to verify hardware execution.
+ *   3. Add a real GPIO toggle to verify hardware execution.
  *   4. Integrate drivers/ for the required sensors and actuators.
  *   5. Integrate net/ for MQTT and mbedTLS communication.
  *   6. Validate ZCU <-> HPC communication after the local hardware
@@ -60,6 +60,7 @@
 
 #include "mcal/rcc_driver.h"
 #include "mcal/gpio_driver.h"
+#include "bsp/bsp_button.h"
 
 /*============================================================================*/
 /*                          LOCAL MACROS                                      */
@@ -151,6 +152,8 @@ int main(void)
     RCC_GPIOA_ClockEnable();
     RCC_GPIOD_ClockEnable();
 
+    GPIOA_MODER_PA00_SetInput();
+
     GPIOD_MODER_PD10_SetOutput();
     GPIOD_MODER_PD11_SetOutput();
     GPIOD_MODER_PD12_SetOutput();
@@ -158,153 +161,162 @@ int main(void)
     GPIOD_MODER_PD14_SetOutput();
     GPIOD_MODER_PD15_SetOutput();
 
+    GPIOA_PUPDR_PA00_SetPull(GPIO_PUPDR_NO_PULL);
+
     for (;;)
     {
         tick_count++;
 
+        /* B1 is pressed */
+        if (Button_B1_IsPressed() != 0U)
+        {
+        	/* Pattern 1: PD10 ON */
+        	        GPIOD_ODR_PD10_SetHigh();
+        	        GPIOD_ODR_PD11_SetLow();
+        	        GPIOD_ODR_PD12_SetLow();
+        	        GPIOD_ODR_PD13_SetLow();
+        	        GPIOD_ODR_PD14_SetLow();
+        	        GPIOD_ODR_PD15_SetLow();
 
-        /* Pattern 1: PD10 ON */
-        GPIOD_ODR_PD10_SetHigh();
-        GPIOD_ODR_PD11_SetLow();
-        GPIOD_ODR_PD12_SetLow();
-        GPIOD_ODR_PD13_SetLow();
-        GPIOD_ODR_PD14_SetLow();
-        GPIOD_ODR_PD15_SetLow();
-
-        delay_cycles(200000UL);
-
-
-        /* Pattern 2: PD11 ON */
-        GPIOD_ODR_PD10_SetLow();
-        GPIOD_ODR_PD11_SetHigh();
-        GPIOD_ODR_PD12_SetLow();
-        GPIOD_ODR_PD13_SetLow();
-        GPIOD_ODR_PD14_SetLow();
-        GPIOD_ODR_PD15_SetLow();
-
-        delay_cycles(200000UL);
+        	        delay_cycles(200000UL);
 
 
-        /* Pattern 3: PD12 ON */
-        GPIOD_ODR_PD10_SetLow();
-        GPIOD_ODR_PD11_SetLow();
-        GPIOD_ODR_PD12_SetHigh();
-        GPIOD_ODR_PD13_SetLow();
-        GPIOD_ODR_PD14_SetLow();
-        GPIOD_ODR_PD15_SetLow();
+        	        /* Pattern 2: PD11 ON */
+        	        GPIOD_ODR_PD10_SetLow();
+        	        GPIOD_ODR_PD11_SetHigh();
+        	        GPIOD_ODR_PD12_SetLow();
+        	        GPIOD_ODR_PD13_SetLow();
+        	        GPIOD_ODR_PD14_SetLow();
+        	        GPIOD_ODR_PD15_SetLow();
 
-        delay_cycles(200000UL);
-
-
-        /* Pattern 4: PD13 ON */
-        GPIOD_ODR_PD10_SetLow();
-        GPIOD_ODR_PD11_SetLow();
-        GPIOD_ODR_PD12_SetLow();
-        GPIOD_ODR_PD13_SetHigh();
-        GPIOD_ODR_PD14_SetLow();
-        GPIOD_ODR_PD15_SetLow();
-
-        delay_cycles(200000UL);
+        	        delay_cycles(200000UL);
 
 
-        /* Pattern 5: PD14 ON */
-        GPIOD_ODR_PD10_SetLow();
-        GPIOD_ODR_PD11_SetLow();
-        GPIOD_ODR_PD12_SetLow();
-        GPIOD_ODR_PD13_SetLow();
-        GPIOD_ODR_PD14_SetHigh();
-        GPIOD_ODR_PD15_SetLow();
+        	        /* Pattern 3: PD12 ON */
+        	        GPIOD_ODR_PD10_SetLow();
+        	        GPIOD_ODR_PD11_SetLow();
+        	        GPIOD_ODR_PD12_SetHigh();
+        	        GPIOD_ODR_PD13_SetLow();
+        	        GPIOD_ODR_PD14_SetLow();
+        	        GPIOD_ODR_PD15_SetLow();
 
-        delay_cycles(200000UL);
-
-
-        /* Pattern 6: PD15 ON */
-        GPIOD_ODR_PD10_SetLow();
-        GPIOD_ODR_PD11_SetLow();
-        GPIOD_ODR_PD12_SetLow();
-        GPIOD_ODR_PD13_SetLow();
-        GPIOD_ODR_PD14_SetLow();
-        GPIOD_ODR_PD15_SetHigh();
-
-        delay_cycles(200000UL);
+        	        delay_cycles(200000UL);
 
 
-        /* Pattern 7: Non-adjacent LEDs PD10, PD12, PD14 ON */
-        GPIOD_ODR_PD10_SetHigh();
-        GPIOD_ODR_PD11_SetLow();
-        GPIOD_ODR_PD12_SetHigh();
-        GPIOD_ODR_PD13_SetLow();
-        GPIOD_ODR_PD14_SetHigh();
-        GPIOD_ODR_PD15_SetLow();
+        	        /* Pattern 4: PD13 ON */
+        	        GPIOD_ODR_PD10_SetLow();
+        	        GPIOD_ODR_PD11_SetLow();
+        	        GPIOD_ODR_PD12_SetLow();
+        	        GPIOD_ODR_PD13_SetHigh();
+        	        GPIOD_ODR_PD14_SetLow();
+        	        GPIOD_ODR_PD15_SetLow();
 
-        delay_cycles(200000UL);
-
-
-        /* Pattern 8: Non-adjacent LEDs PD11, PD13, PD15 ON */
-        GPIOD_ODR_PD10_SetLow();
-        GPIOD_ODR_PD11_SetHigh();
-        GPIOD_ODR_PD12_SetLow();
-        GPIOD_ODR_PD13_SetHigh();
-        GPIOD_ODR_PD14_SetLow();
-        GPIOD_ODR_PD15_SetHigh();
-
-        delay_cycles(200000UL);
+        	        delay_cycles(200000UL);
 
 
-        /* Pattern 9: Reverse sequence - PD15 ON */
-        GPIOD_ODR_PD10_SetLow();
-        GPIOD_ODR_PD11_SetLow();
-        GPIOD_ODR_PD12_SetLow();
-        GPIOD_ODR_PD13_SetLow();
-        GPIOD_ODR_PD14_SetLow();
-        GPIOD_ODR_PD15_SetHigh();
+        	        /* Pattern 5: PD14 ON */
+        	        GPIOD_ODR_PD10_SetLow();
+        	        GPIOD_ODR_PD11_SetLow();
+        	        GPIOD_ODR_PD12_SetLow();
+        	        GPIOD_ODR_PD13_SetLow();
+        	        GPIOD_ODR_PD14_SetHigh();
+        	        GPIOD_ODR_PD15_SetLow();
 
-        delay_cycles(200000UL);
-
-
-        /* Pattern 10: PD14 ON */
-        GPIOD_ODR_PD10_SetLow();
-        GPIOD_ODR_PD11_SetLow();
-        GPIOD_ODR_PD12_SetLow();
-        GPIOD_ODR_PD13_SetLow();
-        GPIOD_ODR_PD14_SetHigh();
-        GPIOD_ODR_PD15_SetLow();
-
-        delay_cycles(200000UL);
+        	        delay_cycles(200000UL);
 
 
-        /* Pattern 11: PD13 ON */
-        GPIOD_ODR_PD10_SetLow();
-        GPIOD_ODR_PD11_SetLow();
-        GPIOD_ODR_PD12_SetLow();
-        GPIOD_ODR_PD13_SetHigh();
-        GPIOD_ODR_PD14_SetLow();
-        GPIOD_ODR_PD15_SetLow();
+        	        /* Pattern 6: PD15 ON */
+        	        GPIOD_ODR_PD10_SetLow();
+        	        GPIOD_ODR_PD11_SetLow();
+        	        GPIOD_ODR_PD12_SetLow();
+        	        GPIOD_ODR_PD13_SetLow();
+        	        GPIOD_ODR_PD14_SetLow();
+        	        GPIOD_ODR_PD15_SetHigh();
 
-        delay_cycles(200000UL);
-
-
-        /* Pattern 12: PD12 ON */
-        GPIOD_ODR_PD10_SetLow();
-        GPIOD_ODR_PD11_SetLow();
-        GPIOD_ODR_PD12_SetHigh();
-        GPIOD_ODR_PD13_SetLow();
-        GPIOD_ODR_PD14_SetLow();
-        GPIOD_ODR_PD15_SetLow();
-
-        delay_cycles(200000UL);
+        	        delay_cycles(200000UL);
 
 
-        /* Pattern 13: PD11 ON */
-        GPIOD_ODR_PD10_SetLow();
-        GPIOD_ODR_PD11_SetHigh();
-        GPIOD_ODR_PD12_SetLow();
-        GPIOD_ODR_PD13_SetLow();
-        GPIOD_ODR_PD14_SetLow();
-        GPIOD_ODR_PD15_SetLow();
+        	        /* Pattern 7: Non-adjacent LEDs PD10, PD12, PD14 ON */
+        	        GPIOD_ODR_PD10_SetHigh();
+        	        GPIOD_ODR_PD11_SetLow();
+        	        GPIOD_ODR_PD12_SetHigh();
+        	        GPIOD_ODR_PD13_SetLow();
+        	        GPIOD_ODR_PD14_SetHigh();
+        	        GPIOD_ODR_PD15_SetLow();
 
-        delay_cycles(200000UL);
+        	        delay_cycles(200000UL);
 
+
+        	        /* Pattern 8: Non-adjacent LEDs PD11, PD13, PD15 ON */
+        	        GPIOD_ODR_PD10_SetLow();
+        	        GPIOD_ODR_PD11_SetHigh();
+        	        GPIOD_ODR_PD12_SetLow();
+        	        GPIOD_ODR_PD13_SetHigh();
+        	        GPIOD_ODR_PD14_SetLow();
+        	        GPIOD_ODR_PD15_SetHigh();
+
+        	        delay_cycles(200000UL);
+
+
+        	        /* Pattern 9: Reverse sequence - PD15 ON */
+        	        GPIOD_ODR_PD10_SetLow();
+        	        GPIOD_ODR_PD11_SetLow();
+        	        GPIOD_ODR_PD12_SetLow();
+        	        GPIOD_ODR_PD13_SetLow();
+        	        GPIOD_ODR_PD14_SetLow();
+        	        GPIOD_ODR_PD15_SetHigh();
+
+        	        delay_cycles(200000UL);
+
+
+        	        /* Pattern 10: PD14 ON */
+        	        GPIOD_ODR_PD10_SetLow();
+        	        GPIOD_ODR_PD11_SetLow();
+        	        GPIOD_ODR_PD12_SetLow();
+        	        GPIOD_ODR_PD13_SetLow();
+        	        GPIOD_ODR_PD14_SetHigh();
+        	        GPIOD_ODR_PD15_SetLow();
+
+        	        delay_cycles(200000UL);
+
+
+        	        /* Pattern 11: PD13 ON */
+        	        GPIOD_ODR_PD10_SetLow();
+        	        GPIOD_ODR_PD11_SetLow();
+        	        GPIOD_ODR_PD12_SetLow();
+        	        GPIOD_ODR_PD13_SetHigh();
+        	        GPIOD_ODR_PD14_SetLow();
+        	        GPIOD_ODR_PD15_SetLow();
+
+        	        delay_cycles(200000UL);
+
+
+        	        /* Pattern 12: PD12 ON */
+        	        GPIOD_ODR_PD10_SetLow();
+        	        GPIOD_ODR_PD11_SetLow();
+        	        GPIOD_ODR_PD12_SetHigh();
+        	        GPIOD_ODR_PD13_SetLow();
+        	        GPIOD_ODR_PD14_SetLow();
+        	        GPIOD_ODR_PD15_SetLow();
+
+        	        delay_cycles(200000UL);
+
+
+        	        /* Pattern 13: PD11 ON */
+        	        GPIOD_ODR_PD10_SetLow();
+        	        GPIOD_ODR_PD11_SetHigh();
+        	        GPIOD_ODR_PD12_SetLow();
+        	        GPIOD_ODR_PD13_SetLow();
+        	        GPIOD_ODR_PD14_SetLow();
+        	        GPIOD_ODR_PD15_SetLow();
+
+        	        delay_cycles(200000UL);
+
+        }
+        else
+        {
+        	/* B1 is released */
+        }
 
 
         /*

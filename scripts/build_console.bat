@@ -358,6 +358,7 @@ if not exist "!ZOUT!\preprocessed" mkdir "!ZOUT!\preprocessed" >nul 2>&1
 if not exist "!ZOUT!\asm" mkdir "!ZOUT!\asm" >nul 2>&1
 if not exist "!ZOUT!\obj" mkdir "!ZOUT!\obj" >nul 2>&1
 if not exist "!ZOUT!\obj\mcal" mkdir "!ZOUT!\obj\mcal" >nul 2>&1
+if not exist "!ZOUT!\obj\bsp" mkdir "!ZOUT!\obj\bsp" >nul 2>&1
 if not exist "!ZOUT!\elf" mkdir "!ZOUT!\elf" >nul 2>&1
 if not exist "!ZOUT!\bin" mkdir "!ZOUT!\bin" >nul 2>&1
 if not exist "!ZOUT!\map" mkdir "!ZOUT!\map" >nul 2>&1
@@ -380,6 +381,11 @@ if /i "!ZT!"=="zcu1-discovery" (
   call :ZCU_COMPILE_C "!ZDIR!" "!ZOUT!" "mcal" gpio_driver
   if errorlevel 1 exit /b 1
   set ZOBJS=!ZOBJS! "!ZOUT!\obj\mcal\gpio_driver.o"
+
+  REM ---- bsp layer - board-level code on top of the mcal drivers ----
+  call :ZCU_COMPILE_C "!ZDIR!" "!ZOUT!" "bsp" bsp_button
+  if errorlevel 1 exit /b 1
+  set ZOBJS=!ZOBJS! "!ZOUT!\obj\bsp\bsp_button.o"
 ) else (
   set "ZLD=STM32F446RE_FLASH.ld"
 )

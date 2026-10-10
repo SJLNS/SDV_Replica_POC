@@ -26,12 +26,13 @@
 /* ============================================================
  * Includes
  * ============================================================ */
-
+#include "mcal/stm32f407_regs.h"
 
 /* ============================================================
  * Function Prototypes
  * ============================================================ */
 
+void GPIOA_MODER_PA00_SetInput(void);                                  /* Set the mode of 00th PIN as Input for PORT GPIOA */
 void GPIOD_MODER_PD10_SetOutput(void);                                 /* Set the mode of 10th PIN as Output for PORT GPIOD */
 void GPIOD_MODER_PD11_SetOutput(void);                                 /* Set the mode of 11th PIN as Output for PORT GPIOD */
 void GPIOD_MODER_PD12_SetOutput(void);                                 /* Set the mode of 12th PIN as Output for PORT GPIOD */
@@ -52,6 +53,9 @@ void GPIOD_ODR_PD12_SetLow(void);                                      /* Set GP
 void GPIOD_ODR_PD13_SetLow(void);                                      /* Set GPIO Port D Pin 13 output data bit LOW */
 void GPIOD_ODR_PD14_SetLow(void);                                      /* Set GPIO Port D Pin 14 output data bit LOW */
 void GPIOD_ODR_PD15_SetLow(void);                                      /* Set GPIO Port D Pin 15 output data bit LOW */
+
+void GPIOA_PUPDR_PA00_SetPull(GPIO_Pull_t pull);                       /* Set GPIO PUPDR to required PULL state */
+GPIO_PinState_t GPIOA_IDR_PA00_Read(void);                             /* Read GPIO Port A Pin 00 Input data */
 
 
 #endif /* GPIO_DRIVER_H */

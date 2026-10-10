@@ -58,6 +58,9 @@
 # 1.1.0       20-Sep-2026    Chittaranjan Baral       Added mcal/gpio_driver.c
 #                                                      to the zcu1-discovery
 #                                                      build.
+# 1.2.0       10-Oct-2026    Chittaranjan Baral       Added bsp/bsp_button.c
+#                                                      to the zcu1-discovery
+#                                                      build.
 # ------------------------------------------------------------------------------
 ###############################################################################
 
@@ -189,7 +192,10 @@ add_executable(zcu1_discovery.elf
 
     # MCU abstraction / low-level drivers
     src/mcal/rcc_driver.c
-	src/mcal/gpio_driver.c
+    src/mcal/gpio_driver.c
+
+    # Board support package (board-level code on top of the MCAL drivers)
+    src/bsp/bsp_button.c
 )
 
 

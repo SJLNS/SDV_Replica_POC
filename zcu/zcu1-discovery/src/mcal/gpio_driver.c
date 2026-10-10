@@ -47,6 +47,42 @@
 /*                        GLOBAL FUNCTION DEFINITIONS                         */
 /*============================================================================*/
 
+void GPIOA_MODER_PA00_SetInput(void)
+{
+    /* Clear MODER bits [01:00] for PA00 */
+	GPIOA_MODER_REG &= ~(0x3UL << (0U * 2U));
+
+    /* Set PA00 to Input mode: MODER[01:00] = 00 */
+	GPIOA_MODER_REG |= ((uint32_t)GPIO_MODER_INPUT << (0U * 2U));
+}
+
+void GPIOA_PUPDR_PA00_SetPull(GPIO_Pull_t pull)
+{
+    /* Reject invalid or reserved values */
+    if ((pull != GPIO_PUPDR_NO_PULL) &&
+        (pull != GPIO_PUPDR_PULL_UP) &&
+        (pull != GPIO_PUPDR_PULL_DOWN))
+    {
+        return;
+    }
+
+    /* Clear PA0's two PUPDR bits */
+    GPIOA_PUPDR_REG &= ~GPIOA_PUPDR_PA00_MASK;
+
+    /* Set the selected pull configuration */
+    GPIOA_PUPDR_REG |= ((uint32_t)pull << (0U * 2U));
+}
+
+GPIO_PinState_t GPIOA_IDR_PA00_Read(void)
+{
+    if ((GPIOA_IDR_REG & GPIOA_IDR_PA00_MASK) != 0U)
+    {
+        return GPIO_PIN_SET;
+    }
+
+    return GPIO_PIN_RESET;
+}
+
 void GPIOD_MODER_PD10_SetOutput(void)
 {
     /* Clear MODER bits [21:20] for PD10 */

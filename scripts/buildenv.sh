@@ -110,6 +110,10 @@
 #                                                      to the zcu1-discovery
 #                                                      build (GPIO mode/output
 #                                                      driver).
+# 1.3.0       10-Oct-2026    Chittaranjan Baral       Added bsp/bsp_button.c
+#                                                      to the zcu1-discovery
+#                                                      build (user button B1
+#                                                      BSP layer).
 # ------------------------------------------------------------------------------
 ###############################################################################
 
@@ -481,6 +485,62 @@ build_target()
 
         base=gpio_driver
         src_rel="mcal/gpio_driver.c"
+
+        # ---------------------------------------------------------------------
+        # Preprocess C source
+        # ---------------------------------------------------------------------
+
+        run_logged "Preprocess $base.c" \
+            "$CC" $CFLAGS \
+            -I"$src_dir/inc" \
+            -E "$src_dir/src/$src_rel" \
+            -o "$out_dir/preprocessed/$base.i" \
+            || return 1
+
+
+        # ---------------------------------------------------------------------
+        # Generate assembly
+        # ---------------------------------------------------------------------
+
+        run_logged "Compile $base.c -> assembly" \
+            "$CC" $CFLAGS \
+            -I"$src_dir/inc" \
+            -S "$src_dir/src/$src_rel" \
+            -o "$out_dir/asm/$base.s" \
+            || return 1
+
+
+        # ---------------------------------------------------------------------
+        # Generate object file
+        # ---------------------------------------------------------------------
+
+        run_logged "Compile $base.c -> object" \
+            "$CC" $CFLAGS \
+            -I"$src_dir/inc" \
+            -c "$src_dir/src/$src_rel" \
+            -o "$out_dir/obj/$base.o" \
+            || return 1
+
+        objs+=("$out_dir/obj/$base.o")
+    fi
+
+
+    ###########################################################################
+    #                 APPLICATION SOURCE: bsp/bsp_button.c                     #
+    ###########################################################################
+
+    # BSP layer (board-level code that sits on top of the MCAL drivers).
+    # Same rationale as the mcal/ blocks above: this file lives in src/bsp/,
+    # not directly in src/, so "src_rel" carries the real path while "base"
+    # names this file's own distinct output artifacts.
+    #
+    # Only zcu1-discovery has this file today (ZCU-2 uses Zephyr's own build
+    # system instead of this script).
+
+    if [ "$target" = "zcu1-discovery" ]; then
+
+        base=bsp_button
+        src_rel="bsp/bsp_button.c"
 
         # ---------------------------------------------------------------------
         # Preprocess C source
