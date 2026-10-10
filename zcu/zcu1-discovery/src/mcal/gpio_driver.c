@@ -47,6 +47,24 @@
 /*                        GLOBAL FUNCTION DEFINITIONS                         */
 /*============================================================================*/
 
+void GPIOD_MODER_PD10_SetOutput(void)
+{
+    /* Clear MODER bits [21:20] for PD10 */
+    GPIOD_MODER_REG &= ~(0x3UL << (10U * 2U));
+
+    /* Set PD10 to Output mode: MODER[21:20] = 01 */
+    GPIOD_MODER_REG |= ((uint32_t)GPIO_MODER_OUTPUT << (10U * 2U));
+}
+
+void GPIOD_MODER_PD11_SetOutput(void)
+{
+    /* Clear MODER bits [23:22] for PD11 */
+    GPIOD_MODER_REG &= ~(0x3UL << (11U * 2U));
+
+    /* Set PD11 to Output mode: MODER[23:22] = 01 */
+    GPIOD_MODER_REG |= ((uint32_t)GPIO_MODER_OUTPUT << (11U * 2U));
+}
+
 void GPIOD_MODER_PD12_SetOutput(void)
 {
     /* Clear MODER bits [25:24] for PD12 */
@@ -84,6 +102,18 @@ void GPIOD_MODER_PD15_SetOutput(void)
 }
 
 
+void GPIOD_ODR_PD10_SetHigh(void)
+{
+	/* Set GPIO Port D Pin 10 output data bit HIGH */
+    GPIOD_ODR_REG |= (1UL << 10);
+}
+
+void GPIOD_ODR_PD11_SetHigh(void)
+{
+	/* Set GPIO Port D Pin 11 output data bit HIGH */
+    GPIOD_ODR_REG |= (1UL << 11);
+}
+
 void GPIOD_ODR_PD12_SetHigh(void)
 {
 	/* Set GPIO Port D Pin 12 output data bit HIGH */
@@ -109,6 +139,17 @@ void GPIOD_ODR_PD15_SetHigh(void)
 }
 
 
+void GPIOD_ODR_PD10_SetLow(void)
+{
+	/* Set GPIO Port D Pin 10 output data bit LOW */
+    GPIOD_ODR_REG &= ~(1UL << 10);
+}
+
+void GPIOD_ODR_PD11_SetLow(void)
+{
+	/* Set GPIO Port D Pin 11 output data bit LOW */
+    GPIOD_ODR_REG &= ~(1UL << 11);
+}
 
 void GPIOD_ODR_PD12_SetLow(void)
 {

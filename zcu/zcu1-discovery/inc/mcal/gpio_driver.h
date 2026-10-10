@@ -32,16 +32,22 @@
  * Function Prototypes
  * ============================================================ */
 
+void GPIOD_MODER_PD10_SetOutput(void);                                 /* Set the mode of 10th PIN as Output for PORT GPIOD */
+void GPIOD_MODER_PD11_SetOutput(void);                                 /* Set the mode of 11th PIN as Output for PORT GPIOD */
 void GPIOD_MODER_PD12_SetOutput(void);                                 /* Set the mode of 12th PIN as Output for PORT GPIOD */
 void GPIOD_MODER_PD13_SetOutput(void);                                 /* Set the mode of 13th PIN as Output for PORT GPIOD */
 void GPIOD_MODER_PD14_SetOutput(void);                                 /* Set the mode of 14th PIN as Output for PORT GPIOD */
 void GPIOD_MODER_PD15_SetOutput(void);                                 /* Set the mode of 15th PIN as Output for PORT GPIOD */
 
+void GPIOD_ODR_PD10_SetHigh(void);                                     /* Set GPIO Port D Pin 10 output data bit HIGH */
+void GPIOD_ODR_PD11_SetHigh(void);                                     /* Set GPIO Port D Pin 11 output data bit HIGH */
 void GPIOD_ODR_PD12_SetHigh(void);                                     /* Set GPIO Port D Pin 12 output data bit HIGH */
 void GPIOD_ODR_PD13_SetHigh(void);                                     /* Set GPIO Port D Pin 13 output data bit HIGH */
 void GPIOD_ODR_PD14_SetHigh(void);                                     /* Set GPIO Port D Pin 14 output data bit HIGH */
 void GPIOD_ODR_PD15_SetHigh(void);                                     /* Set GPIO Port D Pin 15 output data bit HIGH */
 
+void GPIOD_ODR_PD10_SetLow(void);                                      /* Set GPIO Port D Pin 10 output data bit LOW */
+void GPIOD_ODR_PD11_SetLow(void);                                      /* Set GPIO Port D Pin 11 output data bit LOW */
 void GPIOD_ODR_PD12_SetLow(void);                                      /* Set GPIO Port D Pin 12 output data bit LOW */
 void GPIOD_ODR_PD13_SetLow(void);                                      /* Set GPIO Port D Pin 13 output data bit LOW */
 void GPIOD_ODR_PD14_SetLow(void);                                      /* Set GPIO Port D Pin 14 output data bit LOW */
