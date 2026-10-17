@@ -21,6 +21,7 @@
 
 #include "bsp/bsp_button.h"
 #include "mcal/gpio_driver.h"
+#include "mcal/rcc_driver.h"
 
 /*============================================================================*/
 /*                               LOCAL MACROS                                 */
@@ -61,6 +62,16 @@ GPIO_PinState_t Button_B1_Read(void)
 uint8_t Button_B1_IsPressed(void)
 {
     return (Button_B1_Read() == GPIO_PIN_SET) ? 1U : 0U;
+}
+
+/* =========================================================
+ * Init function for setting up things for Button B1
+ * ========================================================= */
+void Button_B1_Init(void)
+{
+	RCC_GPIOA_ClockEnable();
+	GPIOA_MODER_PA00_SetInput();
+	GPIOA_PUPDR_PA00_SetPull(GPIO_PUPDR_NO_PULL);
 }
 
 /*============================================================================*/

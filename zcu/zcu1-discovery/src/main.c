@@ -149,10 +149,7 @@ static void delay_cycles(volatile unsigned long n)
 /******************************************************************************/
 int main(void)
 {
-    RCC_GPIOA_ClockEnable();
     RCC_GPIOD_ClockEnable();
-
-    GPIOA_MODER_PA00_SetInput();
 
     GPIOD_MODER_PD10_SetOutput();
     GPIOD_MODER_PD11_SetOutput();
@@ -161,7 +158,7 @@ int main(void)
     GPIOD_MODER_PD14_SetOutput();
     GPIOD_MODER_PD15_SetOutput();
 
-    GPIOA_PUPDR_PA00_SetPull(GPIO_PUPDR_NO_PULL);
+    Button_B1_Init();
 
     for (;;)
     {

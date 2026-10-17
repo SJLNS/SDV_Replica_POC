@@ -34,6 +34,6 @@
 
 uint8_t Button_B1_IsPressed(void);                               /*API to check Button B1(i.e PA0) is pressed or not*/
 GPIO_PinState_t Button_B1_Read(void);                            /*API to read PIN state of Button B1(i.e PA0)*/
-
+void Button_B1_Init(void);                                       /*Init API for Button B1*/
 
 #endif /* BSP_BUTTON_H */
